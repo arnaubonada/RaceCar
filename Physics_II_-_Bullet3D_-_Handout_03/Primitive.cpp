@@ -17,6 +17,11 @@ PrimitiveTypes Primitive::GetType() const
 	return type;
 }
 
+void Primitive::Update()
+{
+	//TODO 5: Set the primitive position and rotation to the PhysBody position and rotation
+}
+
 // ------------------------------------------------------------
 void Primitive::Render() const
 {
@@ -85,18 +90,21 @@ void Primitive::InnerRender() const
 void Primitive::SetPos(float x, float y, float z)
 {
 	transform.translate(x, y, z);
+	//TODO 6: Set the body position to the new position too!
 }
 
 // ------------------------------------------------------------
 void Primitive::SetRotation(float angle, const vec3 &u)
 {
 	transform.rotate(angle, u);
+	//TODO 6: Set the body rotation to the new rotation too!
 }
 
 // ------------------------------------------------------------
 void Primitive::Scale(float x, float y, float z)
 {
 	transform.scale(x, y, z);
+	//TODO 6: Set the body scale to the new scale too!
 }
 
 // CUBE ============================================
@@ -158,14 +166,11 @@ void Cube::InnerRender() const
 }
 
 // SPHERE ============================================
-Sphere::Sphere() : Primitive(), radius(1.0f)
-{
-	type = PrimitiveTypes::Primitive_Sphere;
-}
 
-Sphere::Sphere(float radius) : Primitive(), radius(radius)
+Sphere::Sphere(float _radius, float mass) : Primitive(), radius(_radius)
 {
 	type = PrimitiveTypes::Primitive_Sphere;
+	//TODO 4: Initialize the PhysBody to be a Sphere
 }
 
 void Sphere::InnerRender() const

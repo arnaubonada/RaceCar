@@ -3,37 +3,39 @@
 #include "Globals.h"
 #include "p2List.h"
 #include "Primitive.h"
-#include "Bullet/include/btBulletDynamicsCommon.h"
-// TODO 1: Add Bullet common include btBulletDynamicsCommon.h
 
-#define GRAVITIY 0.1
+#include "Bullet/include/btBulletDynamicsCommon.h"
+
+// Recommended scale is 1.0f == 1 meter, no less than 0.2 objects
+#define GRAVITY btVector3(0.0f, -10.0f, 0.0f) 
 
 class DebugDrawer;
+class  PhysBody3D;
 
 class ModulePhysics3D : public Module
 {
 public:
-	ModulePhysics3D(Application* app, bool start_enabled = true);
+	ModulePhysics3D(bool start_enabled = true);
 	~ModulePhysics3D();
 
+	bool Init();
 	bool Start();
-	update_status PreUpdate(float dt);
-	update_status Update(float dt);
-	update_status PostUpdate(float dt);
+	update_status PreUpdate(float dt) override;
+	update_status Update(float dt) override;
+	update_status PostUpdate(float dt) override;
 	bool CleanUp();
 
-private:
+	void AddBodyToWorld(btRigidBody* body);
 
-	bool debug;
-	btDispatcher* dispatcher;
-	btBroadphaseInterface* broad_phase;
-	btConstraintSolver* solver;
-	btCollisionConfiguration* collision_configuration;
-	DebugDrawer* debug_draw;
+private:
+	btDefaultCollisionConfiguration*	collision_conf;
+	btCollisionDispatcher*				dispatcher;
+	btBroadphaseInterface*				broad_phase;
+	btSequentialImpulseConstraintSolver* solver;
+	btDiscreteDynamicsWorld*			world;
+	DebugDrawer*						debug_draw;
 };
 
-//TODO 4: Uncomment the declaration of the Debug Drawer
-/*
 class DebugDrawer : public btIDebugDraw
 {
 public:
@@ -51,4 +53,3 @@ public:
 	Line line;
 	Primitive point;
 };
-*/

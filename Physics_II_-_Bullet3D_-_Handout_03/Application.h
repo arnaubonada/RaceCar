@@ -23,6 +23,7 @@ public:
 	ModuleCamera3D* camera;
 	ModulePhysics3D* physics;
 
+	bool debug;
 private:
 
 	Timer	ms_timer;

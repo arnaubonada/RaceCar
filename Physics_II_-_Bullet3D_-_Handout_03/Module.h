@@ -1,6 +1,6 @@
 #pragma once
 
-class Application;
+class  PhysBody3D;
 
 class Module
 {
@@ -8,9 +8,7 @@ private :
 	bool enabled;
 
 public:
-	Application* App;
-
-	Module(Application* parent, bool start_enabled = true) : App(parent)
+	Module(bool start_enabled = true) : enabled(start_enabled)
 	{}
 
 	virtual ~Module()
@@ -45,4 +43,6 @@ public:
 	{ 
 		return true; 
 	}
+
+	//TODO 7: Create virtual method "On Collision", that recieves the two colliding PhysBodies
 };
