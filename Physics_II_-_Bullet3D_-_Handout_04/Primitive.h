@@ -30,7 +30,7 @@ public:
 	Color color;
 	mat4x4 transform;
 	bool axis,wire;
-	//TODO 4: Add a PhysBody to the primitive
+	PhysBody3D body;
 
 protected:
 	virtual void InnerRender() const;
@@ -41,12 +41,12 @@ protected:
 class Cube : public Primitive
 {
 public :
-	Cube();
-	Cube(float sizeX, float sizeY, float sizeZ);
+	Cube(const vec3& size = vec3(1.f,1.f,1.f), float mass = 1.f);
 
+	vec3 GetSize() const;
 protected:
 	void InnerRender() const;
-public:
+private:
 	vec3 size;
 };
 
@@ -56,9 +56,10 @@ class Sphere : public Primitive
 public:
 	Sphere(float radius = 1.f, float mass = 1.f);
 
+	float GetRadius() const;
 protected:
 	void InnerRender() const;
-public:
+private:
 	float radius;
 };
 
@@ -66,12 +67,13 @@ public:
 class Cylinder : public Primitive
 {
 public:
-	Cylinder();
-	Cylinder(float radius, float height);
+	Cylinder(float radius = 1.f, float height = 2.f, float mass = 1.f);
 
+	float GetRadius() const;
+	float GetHeight() const;
 protected:
 	void InnerRender() const;
-public:
+private:
 	float radius;
 	float height;
 };
@@ -81,7 +83,10 @@ class Line : public Primitive
 {
 public:
 	Line();
-	Line(float x, float y, float z);
+	Line(const vec3& A, const vec3& B);
+
+	vec3 GetOrigin() const;
+	vec3 GetDestination() const;
 
 protected:
 	void InnerRender() const;
@@ -94,12 +99,11 @@ public:
 class Plane : public Primitive
 {
 public:
-	Plane();
-	Plane(float x, float y, float z, float d);
+	Plane(const vec3& normal = vec3(0,1,0));
 
+	vec3 GetNormal() const;
 protected:
 	void InnerRender() const;
-public:
+private:
 	vec3 normal;
-	float constant;
 };

@@ -124,6 +124,9 @@ update_status ModuleInput::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		App->debug = !App->debug;
 
+	if (App->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN)
+		App->renderPrimitives = !App->renderPrimitives;
+
 	return UPDATE_CONTINUE;
 }
 

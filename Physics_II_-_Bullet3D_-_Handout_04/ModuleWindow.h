@@ -17,6 +17,8 @@ public:
 
 	bool Init();
 	bool CleanUp();
+	int Width() const;
+	int Height() const;
 
 	void SetTitle(const char* title);
 

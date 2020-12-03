@@ -1,6 +1,6 @@
 #include "Application.h"
 
-Application::Application() : debug(false)
+Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 {
 	window = new ModuleWindow();
 	input = new ModuleInput();

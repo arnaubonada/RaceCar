@@ -95,9 +95,6 @@ update_status ModuleCamera3D::Update(float dt)
 		Position = Reference + Z * length(Position);
 	}
 
-	// Recalculate matrix -------------
-	CalculateViewMatrix();
-
 	return UPDATE_CONTINUE;
 }
 
@@ -116,8 +113,6 @@ void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool Rota
 		this->Reference = this->Position;
 		this->Position += Z * 0.05f;
 	}
-
-	CalculateViewMatrix();
 }
 
 // -----------------------------------------------------------------
@@ -128,8 +123,6 @@ void ModuleCamera3D::LookAt( const vec3 &Spot)
 	Z = normalize(Position - Reference);
 	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
 	Y = cross(Z, X);
-
-	CalculateViewMatrix();
 }
 
 
@@ -138,14 +131,19 @@ void ModuleCamera3D::Move(const vec3 &Movement)
 {
 	Position += Movement;
 	Reference += Movement;
-
-	CalculateViewMatrix();
 }
 
 // -----------------------------------------------------------------
-float* ModuleCamera3D::GetViewMatrix()
+float* ModuleCamera3D::GetRawViewMatrix()
 {
+	CalculateViewMatrix();
 	return &ViewMatrix;
+}
+
+mat4x4 ModuleCamera3D::GetViewMatrix()
+{
+	CalculateViewMatrix();
+	return ViewMatrix;
 }
 
 // -----------------------------------------------------------------

@@ -24,6 +24,7 @@ public:
 	ModulePhysics3D* physics;
 
 	bool debug;
+	bool renderPrimitives;
 private:
 
 	Timer	ms_timer;

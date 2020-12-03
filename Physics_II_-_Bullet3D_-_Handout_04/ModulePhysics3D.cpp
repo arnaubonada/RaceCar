@@ -4,6 +4,8 @@
 #include "PhysBody3D.h"
 #include "Primitive.h"
 
+#include "glut/glut.h"
+
 #ifdef _DEBUG
 	#pragma comment (lib, "Bullet/libx86/BulletDynamics_debug.lib")
 	#pragma comment (lib, "Bullet/libx86/BulletCollision_debug.lib")
@@ -14,7 +16,7 @@
 	#pragma comment (lib, "Bullet/libx86/LinearMath.lib")
 #endif
 
-ModulePhysics3D::ModulePhysics3D(bool start_enabled) : Module(start_enabled)
+ModulePhysics3D::ModulePhysics3D(bool start_enabled) : Module(start_enabled), world(nullptr)
 {
 	collision_conf = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(collision_conf);
@@ -75,13 +77,28 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 {
 	world->stepSimulation(dt, 15);
 
-	// TODO 8: Detect collisions:
-	// - Get world dispatcher
-	// - Iterate all manifolds
-	// - Check we have more than 0 contacts
-	// - If we have contacts, get both PhysBody3D from userpointers
-	// - Make sure both PhysBodies exist!
-	// - Call "OnCollision" function on all listeners from both bodies
+	for (int n = 0; n < world->getDispatcher()->getNumManifolds(); n++)
+	{
+		btPersistentManifold* manifold = world->getDispatcher()->getManifoldByIndexInternal(n);
+		if (manifold->getNumContacts() > 0)
+		{
+			PhysBody3D* body1 = (PhysBody3D*)manifold->getBody0()->getUserPointer();
+			PhysBody3D* body2 = (PhysBody3D*)manifold->getBody1()->getUserPointer();
+
+			if (body1 != nullptr && body2 != nullptr)
+			{
+				for (uint n = 0; n < body1->collision_listeners.Count(); n++)
+				{
+					body1->collision_listeners[n]->OnCollision(body1, body2);
+				}
+
+				for (uint n = 0; n < body2->collision_listeners.Count(); n++)
+				{
+					body2->collision_listeners[n]->OnCollision(body2, body1);
+				}
+			}
+		}
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -89,8 +106,13 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 // ---------------------------------------------------------
 update_status ModulePhysics3D::Update(float dt)
 {
-	if(App->debug == true)
+	if (App->debug == true)
+	{
+		glDisable(GL_LIGHTING);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		world->debugDrawWorld();
+		glEnable(GL_LIGHTING);
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -118,9 +140,35 @@ bool ModulePhysics3D::CleanUp()
 	return true;
 }
 
+PhysBody3D * ModulePhysics3D::RayCast(const vec3 & Origin, const vec3 & Direction, vec3& HitPoint)
+{
+	//TODO: NEW CODE
+	//A snippet of new code that may be useful for you. Nothing to do here really
+	vec3 Dir = normalize(Direction);
+
+	btVector3 Start = btVector3(Origin.x, Origin.y, Origin.z);
+	btVector3 End = btVector3(Origin.x + Dir.x * 1000.f, Origin.y + Dir.y * 1000.f, Origin.z + Dir.z * 1000.f);
+
+	btCollisionWorld::ClosestRayResultCallback RayCallback(Start, End);
+
+	// Perform raycast
+	world->rayTest(Start, End, RayCallback);
+	if (RayCallback.hasHit()) {
+
+		HitPoint = vec3(RayCallback.m_hitPointWorld.x(), RayCallback.m_hitPointWorld.y(), RayCallback.m_hitPointWorld.z());
+		return (PhysBody3D*)RayCallback.m_collisionObject->getUserPointer();
+	}
+	return nullptr;
+}
+
 void ModulePhysics3D::AddBodyToWorld(btRigidBody * body)
 {
 	world->addRigidBody(body);
+}
+
+void ModulePhysics3D::RemoveBodyFromWorld(btRigidBody * body)
+{
+	world->removeRigidBody(body);
 }
 
 // =============================================
