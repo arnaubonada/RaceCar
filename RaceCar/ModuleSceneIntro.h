@@ -9,6 +9,12 @@
 struct PhysBody3D;
 struct PhysMotor3D;
 
+struct cubePieces
+{
+	p2DynArray<PhysBody3D*>		phys_bodies;
+	p2DynArray<Cube>			prim_bodies;
+};
+#define TRACK_WIDTH 20.0f
 class ModuleSceneIntro : public Module
 {
 public:
@@ -18,9 +24,8 @@ public:
 	bool Start();
 	update_status Update(float dt);
 	bool CleanUp();
-
+	void CreateBuilding(const vec3 pos, const vec3 dim, Color bColor);
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
-
 public:
 	/*
 	PhysBody3D* pb_snake[MAX_SNAKE];
@@ -29,6 +34,7 @@ public:
 	PhysBody3D* pb_snake2[MAX_SNAKE];
 	Sphere s_snake2[MAX_SNAKE];
 	*/
+	cubePieces cube_circuit_pieces;
 
 	PhysBody3D* pb_chassis;
 	Cube p_chassis;
@@ -41,4 +47,7 @@ public:
 
 	PhysMotor3D* left_wheel;
 	PhysMotor3D* right_wheel;
+
+	Sphere traffic_light1;
+	Sphere traffic_light2;
 };

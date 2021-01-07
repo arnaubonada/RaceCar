@@ -101,7 +101,7 @@ bool ModulePlayer::Start()
 
 	vehicle = App->physics->AddVehicle(car);	
 	vehicle->SetPos(0, 12, 0);
-	
+	//vehicle->orient(M_PI / 2);
 	return true;
 }
 
@@ -137,13 +137,17 @@ update_status ModulePlayer::Update(float dt)
 
 	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
-		brake = BRAKE_POWER;
+		if (vehicle->GetKmh() > 0.0f)
+			brake = BRAKE_POWER;
+
+		if (vehicle->GetKmh() <= 0.0f)
+			acceleration = -(MAX_ACCELERATION / 2);
 	}
 
 	vehicle->ApplyEngineForce(acceleration);
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
-
+	
 	vehicle->Render();
 
 	char title[80];
