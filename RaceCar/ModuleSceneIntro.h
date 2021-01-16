@@ -4,16 +4,22 @@
 #include "Globals.h"
 #include "Primitive.h"
 
-#define MAX_SNAKE 2
 
 struct PhysBody3D;
 struct PhysMotor3D;
 
-struct cubePieces
+struct Buildings
 {
-	p2DynArray<PhysBody3D*>		phys_bodies;
-	p2DynArray<Cube>			prim_bodies;
+	p2DynArray<PhysBody3D*>		phys_builds;
+	p2DynArray<Cube>			prim_builds;
 };
+struct Patients
+{
+	p2DynArray<PhysBody3D*>		phys_patients;
+	p2DynArray<Cube>			body_patients;
+	p2DynArray<Sphere>			head_patients;
+};
+
 #define TRACK_WIDTH 20.0f
 class ModuleSceneIntro : public Module
 {
@@ -25,16 +31,12 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 	void CreateBuilding(const vec3 pos, const vec3 dim, Color bColor);
+	void CreatePatient(const vec3 pos, Color pColor, int id);
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 public:
-	/*
-	PhysBody3D* pb_snake[MAX_SNAKE];
-	Sphere s_snake[MAX_SNAKE];
+	Buildings cube_buildings;
 
-	PhysBody3D* pb_snake2[MAX_SNAKE];
-	Sphere s_snake2[MAX_SNAKE];
-	*/
-	cubePieces cube_circuit_pieces;
+	Patients cube_patients;
 
 	PhysBody3D* pb_chassis;
 	Cube p_chassis;

@@ -4,6 +4,7 @@
 #include "Primitive.h"
 #include "PhysVehicle3D.h"
 #include "PhysBody3D.h"
+#include "ModuleSceneIntro.h"
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled), vehicle(NULL)
 {
@@ -22,16 +23,16 @@ bool ModulePlayer::Start()
 
 	// Car properties ----------------------------------------
 	car.chassis_size.Set(2, 2, 4);
-	car.chassis_offset.Set(0, 1.5, 0);
+	car.chassis_offset.Set(0, 1.7, 0);
 	car.sirena_size.Set(1.8, 0.2, 0.4);
-	car.sirena_offset.Set(0, 2.6, 1.6);
+	car.sirena_offset.Set(0, 2.8, 1.6);
 
 	car.mass = 500.0f;
-	car.suspensionStiffness = 15.88f;
+	car.suspensionStiffness = 5.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
-	car.maxSuspensionTravelCm = 1000.0f;
-	car.frictionSlip = 50.5;
+	car.maxSuspensionTravelCm = 500.0f;
+	car.frictionSlip = 10.5;
 	car.maxSuspensionForce = 6000.0f;
 
 	// Wheel properties ---------------------------------------
@@ -99,9 +100,12 @@ bool ModulePlayer::Start()
 	car.wheels[3].brake = true;
 	car.wheels[3].steering = false;
 
+	sensor = new Cylinder(3, 4);
+	/*sensor->body.collision_listeners.PushBack(this);
+	sensor->body.SetAsSensor(true);*/
+
 	vehicle = App->physics->AddVehicle(car);	
-	vehicle->SetPos(0, 12, 0);
-	//vehicle->orient(M_PI / 2);
+	vehicle->SetPos(15, 5, -120);
 	return true;
 }
 
@@ -118,24 +122,24 @@ update_status ModulePlayer::Update(float dt)
 {
 	turn = acceleration = brake = 0.0f;
 
-	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 	{
 		acceleration = MAX_ACCELERATION;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 	{
 		if(turn < TURN_DEGREES)
 			turn +=  TURN_DEGREES;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 	{
 		if(turn > -TURN_DEGREES)
 			turn -= TURN_DEGREES;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
 	{
 		if (vehicle->GetKmh() > 0.0f)
 			brake = BRAKE_POWER;
@@ -157,5 +161,10 @@ update_status ModulePlayer::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-
+void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) 
+{
+	
+	
+	
+}
 

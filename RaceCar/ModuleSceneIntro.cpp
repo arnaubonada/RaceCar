@@ -31,9 +31,12 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ -25, 4,  -50 }, { 30, 10, 30 }, White);
 	CreateBuilding({ -25, 29, -80 }, { 20, 60, 20 }, White);
 	
+	//HOSPITAL
+	CreateBuilding({ 15, 14, -150 }, { 50, 30, 50 }, White);
+	CreateBuilding({ 15, 19, -151 }, { 20, 40, 50 }, Red);
 
-	CreateBuilding({ 15, 14, 150 }, { 50, 30, 50 }, White);
-	CreateBuilding({ 15, 19, 151 }, { 20, 40, 50 }, Red);
+
+	CreatePatient({ 15, 0, -30 }, Red, 1);
 
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
@@ -57,8 +60,14 @@ update_status ModuleSceneIntro::Update(float dt)
 	p.axis = true;
 	p.Render();
 
-	for (int i = 0; i < cube_circuit_pieces.prim_bodies.Count(); i++)
-		cube_circuit_pieces.prim_bodies[i].Render();
+	for (int i = 0; i < cube_buildings.prim_builds.Count(); i++)
+		cube_buildings.prim_builds[i].Render();
+	
+	for (int i = 0; i < cube_patients.body_patients.Count(); i++)
+		cube_patients.body_patients[i].Render();
+	
+	for (int i = 0; i < cube_patients.head_patients.Count(); i++)
+		cube_patients.head_patients[i].Render();
 
 	return UPDATE_CONTINUE;
 }
@@ -73,7 +82,22 @@ void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bCol
 	c.color = bColor;
 	c.size = { dim.x, dim.y, dim.z };
 	c.SetPos(pos.x, pos.y + 1, pos.z);
-	cube_circuit_pieces.prim_bodies.PushBack(c);
-	cube_circuit_pieces.phys_bodies.PushBack(App->physics->AddBody(c, this, 0.0f));
+	cube_buildings.prim_builds.PushBack(c);
+	cube_buildings.phys_builds.PushBack(App->physics->AddBody(c, this, 0.0f));
+}
 
+void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColor, int id)
+{
+	Cube c;
+	c.color = pColor;
+	c.size = { 0.5,1.5,0.5 };
+	c.SetPos(pos.x, pos.y + 1, pos.z);
+	cube_patients.body_patients.PushBack(c);
+	cube_patients.phys_patients.PushBack(App->physics->AddBody(c, this, 0.0f, true));
+	Sphere s;
+	s.color = pColor;
+	s.radius = 0.5;
+	s.SetPos(pos.x, pos.y + 2, pos.z);
+	cube_patients.head_patients.PushBack(s);
+	cube_patients.phys_patients.PushBack(App->physics->AddBody(s, this, 0.0f, true));
 }

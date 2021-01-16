@@ -18,9 +18,9 @@ public:
 	bool Start();
 	update_status Update(float dt);
 	bool CleanUp();
-
+	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 public:
-
+	Cylinder* sensor;
 	PhysVehicle3D* vehicle;
 	float turn;
 	float acceleration;
