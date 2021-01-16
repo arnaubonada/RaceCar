@@ -58,8 +58,9 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ -55, 24, 45 }, { 20, 50, 20 }, Gray);
 
 	//HOSPITAL
-	CreateBuilding({ 0, 14, -150 }, { 50, 30, 50 }, White);
-	CreateBuilding({ 0, 19, -151 }, { 20, 40, 50 }, Red);
+	CreateBuilding({ 0, 19, -150 }, { 50, 40, 50 }, White);
+	CreateBuilding({ 0, 25, -100 }, { 3, 10, 2 }, Red);
+	CreateBuilding({ 0, 25, -100 }, { 10, 3, 2 }, Red);
 
 
 	CreatePatient({ 0, 0, -30 }, Red, 1);
