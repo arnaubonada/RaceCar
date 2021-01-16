@@ -105,7 +105,7 @@ bool ModulePlayer::Start()
 	sensor->body.SetAsSensor(true);*/
 
 	vehicle = App->physics->AddVehicle(car);	
-	vehicle->SetPos(15, 5, -120);
+	vehicle->SetPos(0, 5, -120);
 	return true;
 }
 
