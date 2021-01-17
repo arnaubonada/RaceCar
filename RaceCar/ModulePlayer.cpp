@@ -100,9 +100,6 @@ bool ModulePlayer::Start()
 	car.wheels[3].brake = true;
 	car.wheels[3].steering = false;
 
-	sensor.size = (3, 4,3);
-	PhysBody3D* sensors =  App->physics->AddBody(sensor, this, 0.0f, true);
-
 	vehicle = App->physics->AddVehicle(car);	
 	vehicle->SetPos(0, 5, -120);
 	return true;
@@ -152,11 +149,6 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->Brake(brake);
 	
 	vehicle->Render();
-
-	posX = vehicle->getPosX();
-	posY = vehicle->getPosY();
-	posZ = vehicle->getPosZ();
-	sensor.SetPos(posX, posY, posZ);
 	
 	char title[80];
 	sprintf_s(title, "%.1f Km/h", vehicle->GetKmh());
