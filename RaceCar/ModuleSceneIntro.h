@@ -34,9 +34,9 @@ public:
 	void CreatePatient(const vec3 pos, Color pColor, int id);
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 public:
-	Buildings cube_buildings;
+	Buildings buildings;
 
-	Patients cube_patients;
+	Patients patients;
 
 	PhysBody3D* pb_chassis;
 	Cube p_chassis;

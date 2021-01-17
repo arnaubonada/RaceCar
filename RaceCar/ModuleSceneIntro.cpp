@@ -63,7 +63,7 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ 0, 25, -100 }, { 10, 3, 2 }, Red);
 
 
-	CreatePatient({ 0, 0, -30 }, Red, 1);
+	CreatePatient({ 0, -0.1, -30 }, Red, 1);
 
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
@@ -87,21 +87,19 @@ update_status ModuleSceneIntro::Update(float dt)
 	p.axis = true;
 	p.Render();
 
-	for (int i = 0; i < cube_buildings.prim_builds.Count(); i++)
-		cube_buildings.prim_builds[i].Render();
+	for (int i = 0; i < buildings.prim_builds.Count(); i++)
+		buildings.prim_builds[i].Render();
 	
-	for (int i = 0; i < cube_patients.body_patients.Count(); i++)
-		cube_patients.body_patients[i].Render();
+	for (int i = 0; i < patients.body_patients.Count(); i++)
+		patients.body_patients[i].Render();
 	
-	for (int i = 0; i < cube_patients.head_patients.Count(); i++)
-		cube_patients.head_patients[i].Render();
+	for (int i = 0; i < patients.head_patients.Count(); i++)
+		patients.head_patients[i].Render();
 
 	return UPDATE_CONTINUE;
 }
 
-void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-{
-}
+
 
 void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bColor)
 {
@@ -109,8 +107,8 @@ void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bCol
 	c.color = bColor;
 	c.size = { dim.x, dim.y, dim.z };
 	c.SetPos(pos.x, pos.y + 1, pos.z);
-	cube_buildings.prim_builds.PushBack(c);
-	cube_buildings.phys_builds.PushBack(App->physics->AddBody(c, this, 0.0f));
+	buildings.prim_builds.PushBack(c);
+	buildings.phys_builds.PushBack(App->physics->AddBody(c, this, 0.0f));
 }
 
 void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColor, int id)
@@ -119,12 +117,31 @@ void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColor, int id)
 	c.color = pColor;
 	c.size = { 0.5,1.5,0.5 };
 	c.SetPos(pos.x, pos.y + 1, pos.z);
-	cube_patients.body_patients.PushBack(c);
-	cube_patients.phys_patients.PushBack(App->physics->AddBody(c, this, 0.0f, true));
+	patients.body_patients.PushBack(c);
 	Sphere s;
 	s.color = pColor;
 	s.radius = 0.5;
 	s.SetPos(pos.x, pos.y + 2, pos.z);
-	cube_patients.head_patients.PushBack(s);
-	cube_patients.phys_patients.PushBack(App->physics->AddBody(s, this, 0.0f, true));
+	patients.head_patients.PushBack(s);
+
+	Cube sensor;
+	sensor.size = { 1,2.5,1 };
+	sensor.SetPos(pos.x, pos.y + 1.5, pos.z);
+	patients.phys_patients.PushBack(App->physics->AddBody(sensor, this, 0.0f, true));
+
+}
+
+void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
+{
+	if (body1->is_sensor)
+	{
+		if (body1 == patients.phys_patients[0])
+		{
+			
+			patients.body_patients[0].color = White;
+			patients.head_patients[0].color = White;
+
+		}
+
+	}
 }

@@ -100,9 +100,8 @@ bool ModulePlayer::Start()
 	car.wheels[3].brake = true;
 	car.wheels[3].steering = false;
 
-	sensor = new Cylinder(3, 4);
-	/*sensor->body.collision_listeners.PushBack(this);
-	sensor->body.SetAsSensor(true);*/
+	sensor.size = (3, 4,3);
+	PhysBody3D* sensors =  App->physics->AddBody(sensor, this, 0.0f, true);
 
 	vehicle = App->physics->AddVehicle(car);	
 	vehicle->SetPos(0, 5, -120);
@@ -154,6 +153,11 @@ update_status ModulePlayer::Update(float dt)
 	
 	vehicle->Render();
 
+	posX = vehicle->getPosX();
+	posY = vehicle->getPosY();
+	posZ = vehicle->getPosZ();
+	sensor.SetPos(posX, posY, posZ);
+	
 	char title[80];
 	sprintf_s(title, "%.1f Km/h", vehicle->GetKmh());
 	App->window->SetTitle(title);
@@ -161,10 +165,4 @@ update_status ModulePlayer::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) 
-{
-	
-	
-	
-}
 
