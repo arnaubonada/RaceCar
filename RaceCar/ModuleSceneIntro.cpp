@@ -62,8 +62,20 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ 0, 25, -100 }, { 3, 10, 2 }, Red);
 	CreateBuilding({ 0, 25, -100 }, { 10, 3, 2 }, Red);
 
+	//Patient 1
+	CreatePatient({ 0, -0.1, -30 }, Red);
 
-	CreatePatient({ 0, -0.1, -30 }, Red, 1);
+	//Patient 2
+	CreatePatient({ 10, -0.1, -50 }, Red);
+
+	//Patient 3
+	CreatePatient({ 60, -0.1, -50 }, Red);
+
+	//Patient 4
+	CreatePatient({ 10, -0.1, 70 }, Red);
+
+	//Patient 5
+	CreatePatient({ 80, -0.1, 70 }, Red);
 
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
@@ -90,11 +102,31 @@ update_status ModuleSceneIntro::Update(float dt)
 	for (int i = 0; i < buildings.prim_builds.Count(); i++)
 		buildings.prim_builds[i].Render();
 	
-	for (int i = 0; i < patients.body_patients.Count(); i++)
-		patients.body_patients[i].Render();
-	
-	for (int i = 0; i < patients.head_patients.Count(); i++)
-		patients.head_patients[i].Render();
+	if (!pickUpPatient1)
+	{
+		patients.head_patients[0].Render();
+		patients.body_patients[0].Render();
+	}
+	if (!pickUpPatient2)
+	{
+		patients.head_patients[1].Render();
+		patients.body_patients[1].Render();
+	}
+	if (!pickUpPatient3)
+	{
+		patients.head_patients[2].Render();
+		patients.body_patients[2].Render();
+	}
+	if (!pickUpPatient4)
+	{
+		patients.head_patients[3].Render();
+		patients.body_patients[3].Render();
+	}
+	if (!pickUpPatient5)
+	{
+		patients.head_patients[4].Render();
+		patients.body_patients[4].Render();
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -111,7 +143,7 @@ void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bCol
 	buildings.phys_builds.PushBack(App->physics->AddBody(c, this, 0.0f));
 }
 
-void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColor, int id)
+void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColor)
 {
 	Cube c;
 	c.color = pColor;
@@ -137,10 +169,26 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 	{
 		if (body1 == patients.phys_patients[0])
 		{
-			
-			patients.body_patients[0].color = White;
-			patients.head_patients[0].color = White;
-
+			pickUpPatient1 = true;
+			//patients.body_patients[0].color = White;
+			//patients.head_patients[0].color = White;
+		}
+		
+		if (body1 == patients.phys_patients[1])
+		{
+			pickUpPatient2 = true;
+		}
+		if (body1 == patients.phys_patients[2])
+		{
+			pickUpPatient3 = true;
+		}
+		if (body1 == patients.phys_patients[3])
+		{
+			pickUpPatient4 = true;
+		}
+		if (body1 == patients.phys_patients[4])
+		{
+			pickUpPatient5 = true;
 		}
 
 	}

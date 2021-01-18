@@ -31,7 +31,7 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 	void CreateBuilding(const vec3 pos, const vec3 dim, Color bColor);
-	void CreatePatient(const vec3 pos, Color pColor, int id);
+	void CreatePatient(const vec3 pos, Color pColor);
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 public:
 	Buildings buildings;
@@ -50,6 +50,9 @@ public:
 	PhysMotor3D* left_wheel;
 	PhysMotor3D* right_wheel;
 
-	Sphere traffic_light1;
-	Sphere traffic_light2;
+	bool pickUpPatient1 = false;
+	bool pickUpPatient2 = false;
+	bool pickUpPatient3 = false;
+	bool pickUpPatient4 = false;
+	bool pickUpPatient5 = false;
 };
