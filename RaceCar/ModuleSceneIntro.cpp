@@ -58,18 +58,24 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ -55, 24, 45 }, { 20, 50, 20 }, Gray);
 
 	//HOSPITAL
-	CreateBuilding({ 0, 19, -150 }, { 50, 40, 50 }, White);
-	CreateBuilding({ 0, 25, -100 }, { 3, 10, 2 }, Red);
-	CreateBuilding({ 0, 25, -100 }, { 10, 3, 2 }, Red);
+	CreateBuilding({ 0, 14, -150 }, { 50, 30, 50 }, White);
+	CreateBuilding({ 0, 10, -117 }, { 50, 2, 16 }, White);
+	CreateBuilding({ 0,  4, -109.5 }, { 25, 10, 1 }, White);
+	CreateBuilding({ 0, 30, -124 }, { 3, 10, 2 }, Red);
+	CreateBuilding({ 0, 30, -124 }, { 10, 3, 2 }, Red);
+
+	CreateBuilding({ 0, -1, 0 }, { 300, 0.5, 300 }, Gray);
+
+	
 
 	//Patient 1
-	CreatePatient({ -87, -0.1, 50 }, Red);
+	CreatePatient({ 60, -0.1, -50 }, Red);
 
 	//Patient 2
 	CreatePatient({ 20, -0.1, -70 }, Red);
 
 	//Patient 3
-	CreatePatient({ 60, -0.1, -50 }, Red);
+	CreatePatient({ -87, -0.1, 50  }, Red);
 
 	//Patient 4
 	CreatePatient({ 10, -0.1, 70 }, Red);
@@ -77,7 +83,7 @@ bool ModuleSceneIntro::Start()
 	//Patient 5
 	CreatePatient({ 80, -0.1, 70 }, Red);
 
-	CreateHospital({ 0, 4, -124 }, White);
+	CreateHospitalSensor({ 0, 1, -118 });
 
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
@@ -97,40 +103,39 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-	Plane p(0, 1, 0, 0);
-	p.axis = true;
-	p.Render();
+	/*Plane p(0, 1, 0, 0);
+	p.axis = true;*/
+	//p.Render();
 
 	for (int i = 0; i < buildings.prim_builds.Count(); i++)
 		buildings.prim_builds[i].Render();
-	
-	hospital.body_hospital[0].Render();
 
 	if (!pickUpPatient1)
 	{
 		patients.head_patients[0].Render();
 		patients.body_patients[0].Render();
 	}
-	if (!pickUpPatient2)
+	if (!pickUpPatient2 && pickUpPatient1 && ambulanceFree)
 	{
 		patients.head_patients[1].Render();
 		patients.body_patients[1].Render();
 	}
-	if (!pickUpPatient3)
+	if (!pickUpPatient3 && pickUpPatient2 && ambulanceFree)
 	{
 		patients.head_patients[2].Render();
 		patients.body_patients[2].Render();
 	}
-	if (!pickUpPatient4)
+	if (!pickUpPatient4 && pickUpPatient3 && ambulanceFree)
 	{
 		patients.head_patients[3].Render();
 		patients.body_patients[3].Render();
 	}
-	if (!pickUpPatient5)
+	if (!pickUpPatient5 && pickUpPatient4 && ambulanceFree)
 	{
 		patients.head_patients[4].Render();
 		patients.body_patients[4].Render();
 	}
+
 
 	return UPDATE_CONTINUE;
 }
@@ -166,60 +171,58 @@ void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColor)
 	patients.phys_patients.PushBack(App->physics->AddBody(sensor, this, 0.0f, true));
 }
 
-void ModuleSceneIntro::CreateHospital(const vec3 pos, Color pColor)
+void ModuleSceneIntro::CreateHospitalSensor(const vec3 pos)
 {
-	Cube c;
-	c.color = pColor;
-	c.size = { 15,10,15 };
-	c.SetPos(pos.x, pos.y + 1, pos.z);
-	hospital.body_hospital.PushBack(c);
-
 	Cube sensor;
-	sensor.size = { 1,2.5,1 };
+	sensor.size = { 2,4,16 };
 	sensor.SetPos(pos.x, pos.y + 1.5, pos.z);
-	hospital.phys_hospital.PushBack(App->physics->AddBody(sensor, this, 0.0f, true));
+	hospitalSensor = App->physics->AddBody(sensor, this, 0.0f, true);
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
 	if (body1->is_sensor)
 	{
-		if ((body1 == patients.phys_patients[0]) && (canPickUp))
+		if (body1 == patients.phys_patients[0] && ambulanceFree)
 		{
-			pickUpPatient1 = true; 
-			canPickUp = false;
-			LOG("Patient 1 picked up")
+			pickUpPatient1 = true;
+			ambulanceFree = false;
+			if(countPatients<1) countPatients=1;
 		}
 		
-		if ((body1 == patients.phys_patients[1]) && (canPickUp))
+		if (body1 == patients.phys_patients[1] && pickUpPatient1 && ambulanceFree)
 		{
 			pickUpPatient2 = true;
-			canPickUp = false;
-			LOG("Patient 2 picked up")
+			ambulanceFree = false;
+			if (countPatients < 2) countPatients=2;
 		}
-		if ((body1 == patients.phys_patients[2]) && (canPickUp))
+		if (body1 == patients.phys_patients[2] && pickUpPatient2 && ambulanceFree)
 		{
 			pickUpPatient3 = true;
-			canPickUp = false;
-			LOG("Patient 3 picked up")
+			ambulanceFree = false;
+			if (countPatients < 3) countPatients=3;
 		}
-		if ((body1 == patients.phys_patients[3]) && (canPickUp))
+		if (body1 == patients.phys_patients[3] && pickUpPatient3 && ambulanceFree)
 		{
 			pickUpPatient4 = true;
-			canPickUp = false;
-			LOG("Patient 4 picked up")
+			ambulanceFree = false;
+			if (countPatients < 4) countPatients=4;
 		}
-		if ((body1 == patients.phys_patients[4]) && (canPickUp))
+		if (body1 == patients.phys_patients[4] && pickUpPatient4 && ambulanceFree)
 		{
 			pickUpPatient5 = true;
-			canPickUp = false;
-			LOG("Patient 5 picked up")
+			ambulanceFree = false;
+			if (countPatients < 5) countPatients=5;
 		}
-		if ((body1 == hospital.phys_hospital[0]) && (!canPickUp))
+
+		if (body1 == hospitalSensor)
 		{
-			canPickUp = true;
-			LOG("Patient left on hospital")
-			LOG("You can now pick up more patients")
+			ambulanceFree = true;
+			if (countHospitalPatients < 1 && pickUpPatient1) countHospitalPatients = 1;
+			if (countHospitalPatients < 2 && pickUpPatient2) countHospitalPatients = 2;
+			if (countHospitalPatients < 3 && pickUpPatient3) countHospitalPatients = 3;
+			if (countHospitalPatients < 4 && pickUpPatient4) countHospitalPatients = 4;
+			if (countHospitalPatients < 5 && pickUpPatient5) countHospitalPatients = 5;
 		}
 
 	}

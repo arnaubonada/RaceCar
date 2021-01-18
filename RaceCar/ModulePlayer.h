@@ -25,4 +25,8 @@ public:
 	float turn;
 	float acceleration;
 	float brake;
+
+	Timer timer;
+	float count = 0;
+	int countInt = 0;
 };

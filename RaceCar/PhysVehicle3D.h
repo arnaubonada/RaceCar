@@ -2,6 +2,7 @@
 
 #include "PhysBody3D.h"
 #include "glmath.h"
+#include "Application.h"
 
 class btRaycastVehicle;
 struct PhysBody3D;
@@ -48,6 +49,7 @@ public:
 	~PhysVehicle3D();
 
 	void Render();
+	void RenderPatient();
 	void ApplyEngineForce(float force);
 	void Brake(float force);
 	void Turn(float degrees);

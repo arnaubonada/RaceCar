@@ -99,9 +99,12 @@ bool ModulePlayer::Start()
 	car.wheels[3].drive = false;
 	car.wheels[3].brake = true;
 	car.wheels[3].steering = false;
-
+	
 	vehicle = App->physics->AddVehicle(car);	
-	vehicle->SetPos(0, 5, -120);
+	vehicle->SetPos(-17, 5, -110);
+
+	timer.Start();
+
 	return true;
 }
 
@@ -147,11 +150,20 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->ApplyEngineForce(acceleration);
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
+
+	count = timer.Read() * 0.001f;
+	countInt = timer.Read() * 0.001f;
+
+	if(App->scene_intro->ambulanceFree) vehicle->Render();
+	else
+	{
+		if(countInt % 2 == 0) vehicle->Render();
+		else vehicle->RenderPatient();
+	}
 	
-	vehicle->Render();
 	
-	char title[80];
-	sprintf_s(title, "%.1f Km/h", vehicle->GetKmh());
+	char title[200];
+	sprintf_s(title, "%.1f Km/h || Patients picked up: %d/5 || Patients in the hospital %d/5 || Time: %.2f", vehicle->GetKmh(), App->scene_intro->countPatients, App->scene_intro->countHospitalPatients, count);
 	App->window->SetTitle(title);
 
 	return UPDATE_CONTINUE;
