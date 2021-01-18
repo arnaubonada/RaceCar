@@ -63,10 +63,10 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ 0, 25, -100 }, { 10, 3, 2 }, Red);
 
 	//Patient 1
-	CreatePatient({ 0, -0.1, -30 }, Red);
+	CreatePatient({ -87, -0.1, 50 }, Red);
 
 	//Patient 2
-	CreatePatient({ 10, -0.1, -50 }, Red);
+	CreatePatient({ 20, -0.1, -70 }, Red);
 
 	//Patient 3
 	CreatePatient({ 60, -0.1, -50 }, Red);
@@ -77,10 +77,12 @@ bool ModuleSceneIntro::Start()
 	//Patient 5
 	CreatePatient({ 80, -0.1, 70 }, Red);
 
+	CreateHospital({ 0, 4, -124 }, White);
+
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
-
+	
 	return ret;
 }
 
@@ -102,6 +104,8 @@ update_status ModuleSceneIntro::Update(float dt)
 	for (int i = 0; i < buildings.prim_builds.Count(); i++)
 		buildings.prim_builds[i].Render();
 	
+	hospital.body_hospital[0].Render();
+
 	if (!pickUpPatient1)
 	{
 		patients.head_patients[0].Render();
@@ -160,35 +164,62 @@ void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColor)
 	sensor.size = { 1,2.5,1 };
 	sensor.SetPos(pos.x, pos.y + 1.5, pos.z);
 	patients.phys_patients.PushBack(App->physics->AddBody(sensor, this, 0.0f, true));
+}
 
+void ModuleSceneIntro::CreateHospital(const vec3 pos, Color pColor)
+{
+	Cube c;
+	c.color = pColor;
+	c.size = { 15,10,15 };
+	c.SetPos(pos.x, pos.y + 1, pos.z);
+	hospital.body_hospital.PushBack(c);
+
+	Cube sensor;
+	sensor.size = { 1,2.5,1 };
+	sensor.SetPos(pos.x, pos.y + 1.5, pos.z);
+	hospital.phys_hospital.PushBack(App->physics->AddBody(sensor, this, 0.0f, true));
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
 	if (body1->is_sensor)
 	{
-		if (body1 == patients.phys_patients[0])
+		if ((body1 == patients.phys_patients[0]) && (canPickUp))
 		{
-			pickUpPatient1 = true;
-			//patients.body_patients[0].color = White;
-			//patients.head_patients[0].color = White;
+			pickUpPatient1 = true; 
+			canPickUp = false;
+			LOG("Patient 1 picked up")
 		}
 		
-		if (body1 == patients.phys_patients[1])
+		if ((body1 == patients.phys_patients[1]) && (canPickUp))
 		{
 			pickUpPatient2 = true;
+			canPickUp = false;
+			LOG("Patient 2 picked up")
 		}
-		if (body1 == patients.phys_patients[2])
+		if ((body1 == patients.phys_patients[2]) && (canPickUp))
 		{
 			pickUpPatient3 = true;
+			canPickUp = false;
+			LOG("Patient 3 picked up")
 		}
-		if (body1 == patients.phys_patients[3])
+		if ((body1 == patients.phys_patients[3]) && (canPickUp))
 		{
 			pickUpPatient4 = true;
+			canPickUp = false;
+			LOG("Patient 4 picked up")
 		}
-		if (body1 == patients.phys_patients[4])
+		if ((body1 == patients.phys_patients[4]) && (canPickUp))
 		{
 			pickUpPatient5 = true;
+			canPickUp = false;
+			LOG("Patient 5 picked up")
+		}
+		if ((body1 == hospital.phys_hospital[0]) && (!canPickUp))
+		{
+			canPickUp = true;
+			LOG("Patient left on hospital")
+			LOG("You can now pick up more patients")
 		}
 
 	}
