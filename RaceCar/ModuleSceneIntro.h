@@ -49,4 +49,8 @@ public:
 	bool ambulanceFree = true;
 	int countPatients = 0;
 	int countHospitalPatients = 0;
+
+private:
+	int pickupFx;
+	int hospitalFx;
 };

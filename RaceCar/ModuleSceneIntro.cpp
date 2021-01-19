@@ -65,9 +65,7 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ 0, 30, -124 }, { 10, 3, 2 }, Red);
 
 	CreateBuilding({ 0, -1, 0 }, { 300, 0.5, 300 }, Gray);
-
 	
-
 	//Patient 1
 	CreatePatient({ 60, -0.1, -50 }, Red);
 
@@ -85,6 +83,9 @@ bool ModuleSceneIntro::Start()
 
 	CreateHospitalSensor({ 0, 1, -118 });
 
+	App->audio->PlayMusic("Assets/Sound/waves.ogg");
+	pickupFx = App->audio->LoadFx("Assets/Sound/retro_pickup.ogg");
+	hospitalFx = App->audio->LoadFx("Assets/Sound/completed.ogg");
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
@@ -187,6 +188,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 		{
 			pickUpPatient1 = true;
 			ambulanceFree = false;
+			App->audio->PlayFx(pickupFx);
 			if(countPatients<1) countPatients=1;
 		}
 		
@@ -194,30 +196,36 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 		{
 			pickUpPatient2 = true;
 			ambulanceFree = false;
+			App->audio->PlayFx(pickupFx);
 			if (countPatients < 2) countPatients=2;
 		}
 		if (body1 == patients.phys_patients[2] && pickUpPatient2 && ambulanceFree)
 		{
 			pickUpPatient3 = true;
 			ambulanceFree = false;
+			App->audio->PlayFx(pickupFx);
 			if (countPatients < 3) countPatients=3;
 		}
 		if (body1 == patients.phys_patients[3] && pickUpPatient3 && ambulanceFree)
 		{
 			pickUpPatient4 = true;
 			ambulanceFree = false;
+			App->audio->PlayFx(pickupFx);
 			if (countPatients < 4) countPatients=4;
 		}
 		if (body1 == patients.phys_patients[4] && pickUpPatient4 && ambulanceFree)
 		{
 			pickUpPatient5 = true;
 			ambulanceFree = false;
+			App->audio->PlayFx(pickupFx);
 			if (countPatients < 5) countPatients=5;
 		}
 
-		if (body1 == hospitalSensor)
+		if (body1 == hospitalSensor && !ambulanceFree)
 		{
 			ambulanceFree = true;
+			App->audio->PlayFx(hospitalFx);
+
 			if (countHospitalPatients < 1 && pickUpPatient1) countHospitalPatients = 1;
 			if (countHospitalPatients < 2 && pickUpPatient2) countHospitalPatients = 2;
 			if (countHospitalPatients < 3 && pickUpPatient3) countHospitalPatients = 3;
