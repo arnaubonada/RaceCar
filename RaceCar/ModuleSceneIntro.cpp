@@ -93,6 +93,9 @@ bool ModuleSceneIntro::Start()
 
 	CreateHospitalSensor({ 0, 1, -118 });
 
+	CreateConstrain({ 15, 4, -109.5 }, Red);
+	CreateConstrain({ -15, 4, -109.5 }, Red);
+
 	App->audio->PlayMusic("Assets/Sound/waves.ogg");
 	pickupFx = App->audio->LoadFx("Assets/Sound/retro_pickup.ogg");
 	
@@ -185,12 +188,38 @@ void ModuleSceneIntro::CreateHospitalSensor(const vec3 pos)
 	hospitalSensor = App->physics->AddBody(sensor, this, 0.0f, true);
 }
 
-void ModuleSceneIntro::CreateConstrain(const vec3 pos)
+void ModuleSceneIntro::CreateConstrain(const vec3 pos, Color pColor)
 {
-	Cylinder constrainBase;
-	constrainBase.radius = 10.0f;
-	constrainBase.height = 5.0f;
-	constrainBase.SetPos(pos.x, pos.y + 1.5, pos.z);
+	Cube c;
+	c.color = pColor;
+	c.size = {30, 12, 0.5};
+	c.SetPos(pos.x, pos.y + 1.5, pos.z);
+	buildings.prim_builds.PushBack(c);
+	buildings.phys_builds.PushBack(App->physics->AddBody(c, this, 0.0f));
+
+	btTransform frameInA, frameInB;
+
+	btSliderConstraint* constraint;
+
+	frameInA.setIdentity();
+	frameInB.setIdentity();
+	frameInA.getBasis().setEulerZYX(0, 0, M_PI_2);
+	frameInB.getBasis().setEulerZYX(0, 0, M_PI_2);
+	frameInA.setOrigin(btVector3(0.f, 0, 0.f));
+	frameInB.setOrigin(btVector3(0.f, -2.6f, 0.f));
+
+	//constraint = App->physics->AddConstraintSlider(*c, *bollardBase, frameInA, frameInB);
+	//bollards_c.PushBack(constraint);
+	constraint->setPoweredAngMotor(true);
+	constraint->setTargetAngMotorVelocity(2);
+	constraint->setLowerAngLimit(-0.1);
+	constraint->setUpperAngLimit(0.1);
+
+	constraint->setPoweredLinMotor(true);
+	constraint->setTargetLinMotorVelocity(0);
+	constraint->setLowerLinLimit(-9.6f);
+	constraint->setUpperLinLimit(9.6f);
+
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)

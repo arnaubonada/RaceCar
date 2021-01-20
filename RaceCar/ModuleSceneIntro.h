@@ -41,7 +41,7 @@ public:
 	void CreateBuilding(const vec3 pos, const vec3 dim, Color bColor);
 	void CreatePatient(const vec3 pos, Color pColorHead, Color pColorBody);
 	void CreateHospitalSensor(const vec3 pos);
-	void CreateConstrain(const vec3 pos);
+	void CreateConstrain(const vec3 pos, Color pColor);
 
 public:
 	Buildings buildings;
