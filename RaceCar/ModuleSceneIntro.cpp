@@ -57,9 +57,19 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ -55,  9, 25 }, { 20, 20, 20 }, Gray);
 	CreateBuilding({ -55, 24, 45 }, { 20, 50, 20 }, Gray);
 
+	CreateBuilding({0, 99, 300 }, { 600, 200, 1 }, Sky);
+	CreateBuilding({0, 99, -300 }, { 600, 200, 1 }, Sky);
+	CreateBuilding({300, 99, 0}, { 1, 200, 600 }, Sky);
+	CreateBuilding({-300, 99, 0 }, { 1, 200, 600 }, Sky);
+
+	sun.color = Yellow;
+	sun.radius = 10;
+	sun.SetPos(100, 110, 250);
+
+
 	//HOSPITAL
 	CreateBuilding({ 0, 14, -150 }, { 50, 30, 50 }, White);
-	CreateBuilding({ 0, 10, -117 }, { 50, 2, 16 }, White);
+	CreateBuilding({ 0, 10, -117 }, { 50, 2, 16 }, Turquoise);
 	CreateBuilding({ 0,  4, -109.5 }, { 25, 10, 1 }, White);
 	CreateBuilding({ 0, 30, -124 }, { 3, 10, 2 }, Red);
 	CreateBuilding({ 0, 30, -124 }, { 10, 3, 2 }, Red);
@@ -67,24 +77,25 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ 0, -1, 0 }, { 300, 0.5, 300 }, Gray);
 	
 	//Patient 1
-	CreatePatient({ 60, -0.1, -50 }, Red);
+	CreatePatient({ 60, -0.1, -50 }, Beige, Black);
 
 	//Patient 2
-	CreatePatient({ 20, -0.1, -70 }, Red);
+	CreatePatient({ 20, -0.1, -70 }, Beige, Blue);
 
 	//Patient 3
-	CreatePatient({ -87, -0.1, 50  }, Red);
+	CreatePatient({ -87, -0.1, 50  }, Brown, Green);
 
 	//Patient 4
-	CreatePatient({ 10, -0.1, 70 }, Red);
+	CreatePatient({ 10, -0.1, 70 }, Beige, Orange);
 
 	//Patient 5
-	CreatePatient({ 80, -0.1, 70 }, Red);
+	CreatePatient({ 80, -0.1, 70 }, Brown, White);
 
 	CreateHospitalSensor({ 0, 1, -118 });
 
 	App->audio->PlayMusic("Assets/Sound/waves.ogg");
 	pickupFx = App->audio->LoadFx("Assets/Sound/retro_pickup.ogg");
+	
 	hospitalFx = App->audio->LoadFx("Assets/Sound/completed.ogg");
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
@@ -109,33 +120,31 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	if (!pickUpPatient1)
 	{
-		patients.head_patients[0].Render();
-		patients.body_patients[0].Render();
+		patients.head[0].Render();
+		patients.body[0].Render();
 	}
 	if (!pickUpPatient2 && pickUpPatient1 && ambulanceFree)
 	{
-		patients.head_patients[1].Render();
-		patients.body_patients[1].Render();
+		patients.head[1].Render();
+		patients.body[1].Render();
 	}
 	if (!pickUpPatient3 && pickUpPatient2 && ambulanceFree)
 	{
-		patients.head_patients[2].Render();
-		patients.body_patients[2].Render();
+		patients.head[2].Render();
+		patients.body[2].Render();
 	}
 	if (!pickUpPatient4 && pickUpPatient3 && ambulanceFree)
 	{
-		patients.head_patients[3].Render();
-		patients.body_patients[3].Render();
+		patients.head[3].Render();
+		patients.body[3].Render();
 	}
 	if (!pickUpPatient5 && pickUpPatient4 && ambulanceFree)
 	{
-		patients.head_patients[4].Render();
-		patients.body_patients[4].Render();
+		patients.head[4].Render();
+		patients.body[4].Render();
 	}
 
-	//constrains.base_constrains[0].Render();
-	//constrains.prim_constrains[0].Render();
-
+	sun.Render();
 	return UPDATE_CONTINUE;
 }
 
@@ -149,22 +158,22 @@ void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bCol
 	buildings.phys_builds.PushBack(App->physics->AddBody(c, this, 0.0f));
 }
 
-void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColor)
+void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColorHead, Color pColorBody)
 {
-	Cube c;
-	c.color = pColor;
-	c.size = { 0.5,1.5,0.5 };
-	c.SetPos(pos.x, pos.y + 1, pos.z);
-	patients.body_patients.PushBack(c);
 	Sphere s;
-	s.color = pColor;
+	s.color = pColorHead;
 	s.radius = 0.5;
-	s.SetPos(pos.x, pos.y + 2, pos.z);
-	patients.head_patients.PushBack(s);
+	s.SetPos(pos.x, pos.y + 2.5, pos.z);
+	patients.head.PushBack(s);
+	Cube c;
+	c.color = pColorBody;
+	c.size = { 0.5,2,0.5 };
+	c.SetPos(pos.x, pos.y + 1.5, pos.z);
+	patients.body.PushBack(c);
 
 	Cube sensor;
-	sensor.size = { 1,2.5,1 };
-	sensor.SetPos(pos.x, pos.y + 1.5, pos.z);
+	sensor.size = { 1,3,1 };
+	sensor.SetPos(pos.x, pos.y + 2, pos.z);
 	patients.phys_patients.PushBack(App->physics->AddBody(sensor, this, 0.0f, true));
 }
 

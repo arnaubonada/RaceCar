@@ -102,8 +102,9 @@ bool ModulePlayer::Start()
 	
 	vehicle = App->physics->AddVehicle(car);	
 	vehicle->SetPos(-17, 5, -110);
-
 	timer.Start();
+
+	sirenFx = App->audio->LoadFx("Assets/Sound/ambulance.ogg");
 
 	return true;
 }
@@ -154,7 +155,7 @@ update_status ModulePlayer::Update(float dt)
 	count = timer.Read() * 0.001f;
 	countInt = timer.Read() * 0.001f;
 
-	if (count >= 5.0f)
+	if (count >= 120.0f)
 	{
 		// Resets Timer and all variables
 		timer.Start();
@@ -166,6 +167,7 @@ update_status ModulePlayer::Update(float dt)
 	{
 		if(countInt % 2 == 0) vehicle->Render();
 		else vehicle->RenderPatient();
+		App->audio->PlayFx(sirenFx);
 	}
 		
 	char title[200];

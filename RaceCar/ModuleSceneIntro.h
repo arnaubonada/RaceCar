@@ -16,8 +16,8 @@ struct Buildings
 struct Patients
 {
 	p2DynArray<PhysBody3D*>		phys_patients;
-	p2DynArray<Cube>			body_patients;
-	p2DynArray<Sphere>			head_patients;
+	p2DynArray<Sphere>			head;
+	p2DynArray<Cube>			body;
 };
 struct Constrains
 {
@@ -39,7 +39,7 @@ public:
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 
 	void CreateBuilding(const vec3 pos, const vec3 dim, Color bColor);
-	void CreatePatient(const vec3 pos, Color pColor);
+	void CreatePatient(const vec3 pos, Color pColorHead, Color pColorBody);
 	void CreateHospitalSensor(const vec3 pos);
 	void CreateConstrain(const vec3 pos);
 
@@ -48,7 +48,7 @@ public:
 	Patients patients;
 	Constrains constrains;
 	PhysBody3D* hospitalSensor;
-
+	Sphere sun;
 	bool pickUpPatient1 = false;
 	bool pickUpPatient2 = false;
 	bool pickUpPatient3 = false;
@@ -57,7 +57,7 @@ public:
 	bool ambulanceFree = true;
 	int countPatients = 0;
 	int countHospitalPatients = 0;
-
+	
 private:
 	int pickupFx;
 	int hospitalFx;
