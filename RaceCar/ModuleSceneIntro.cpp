@@ -199,45 +199,61 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 	{
 		if (body1 == patients.phys_patients[0] && ambulanceFree)
 		{
-			pickUpPatient1 = true;
-			ambulanceFree = false;
-			App->audio->PlayFx(pickupFx);
-			if(countPatients<1) countPatients=1;
+			if (countPatients < 1)
+			{
+				countPatients = 1;
+				pickUpPatient1 = true;
+				ambulanceFree = false;
+				App->audio->PlayFx(pickupFx);
+			}
 		}
 		
 		if (body1 == patients.phys_patients[1] && pickUpPatient1 && ambulanceFree)
 		{
-			pickUpPatient2 = true;
-			ambulanceFree = false;
-			App->audio->PlayFx(pickupFx);
-			if (countPatients < 2) countPatients=2;
+			if (countPatients < 2) 
+			{
+				pickUpPatient2 = true;
+				ambulanceFree = false;
+				App->audio->PlayFx(pickupFx);
+				countPatients = 2;
+			}
 		}
 		if (body1 == patients.phys_patients[2] && pickUpPatient2 && ambulanceFree)
 		{
-			pickUpPatient3 = true;
-			ambulanceFree = false;
-			App->audio->PlayFx(pickupFx);
-			if (countPatients < 3) countPatients=3;
+			if (countPatients < 3)
+			{
+				pickUpPatient3 = true;
+				ambulanceFree = false;
+				App->audio->PlayFx(pickupFx);
+				countPatients = 3;
+			}			
 		}
 		if (body1 == patients.phys_patients[3] && pickUpPatient3 && ambulanceFree)
 		{
-			pickUpPatient4 = true;
-			ambulanceFree = false;
-			App->audio->PlayFx(pickupFx);
-			if (countPatients < 4) countPatients=4;
+			if (countPatients < 4)
+			{
+				pickUpPatient4 = true;
+				ambulanceFree = false;
+				App->audio->PlayFx(pickupFx);
+				countPatients = 4;
+			}			
 		}
 		if (body1 == patients.phys_patients[4] && pickUpPatient4 && ambulanceFree)
 		{
-			pickUpPatient5 = true;
-			ambulanceFree = false;
-			App->audio->PlayFx(pickupFx);
-			if (countPatients < 5) countPatients=5;
+			if (countPatients < 5)
+			{
+				pickUpPatient5 = true;
+				ambulanceFree = false;
+				App->audio->PlayFx(pickupFx);
+				countPatients = 5;
+			}			
 		}
 
 		if (body1 == hospitalSensor && !ambulanceFree)
 		{
 			ambulanceFree = true;
 			App->audio->PlayFx(hospitalFx);
+			App->audio->StopFx(App->player->sirenFx);
 
 			if (countHospitalPatients < 1 && pickUpPatient1) countHospitalPatients = 1;
 			if (countHospitalPatients < 2 && pickUpPatient2) countHospitalPatients = 2;
@@ -245,6 +261,5 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			if (countHospitalPatients < 4 && pickUpPatient4) countHospitalPatients = 4;
 			if (countHospitalPatients < 5 && pickUpPatient5) countHospitalPatients = 5;
 		}
-
 	}
 }

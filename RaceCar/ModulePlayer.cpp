@@ -167,7 +167,7 @@ update_status ModulePlayer::Update(float dt)
 	{
 		if(countInt % 2 == 0) vehicle->Render();
 		else vehicle->RenderPatient();
-		App->audio->PlayFx(sirenFx);
+		App->audio->PlayFx(sirenFx, 1);
 	}
 		
 	char title[200];
