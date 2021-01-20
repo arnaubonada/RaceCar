@@ -154,14 +154,20 @@ update_status ModulePlayer::Update(float dt)
 	count = timer.Read() * 0.001f;
 	countInt = timer.Read() * 0.001f;
 
+	if (count >= 5.0f)
+	{
+		// Resets Timer and all variables
+		timer.Start();
+		ResetGame();
+	}
+
 	if(App->scene_intro->ambulanceFree) vehicle->Render();
 	else
 	{
 		if(countInt % 2 == 0) vehicle->Render();
 		else vehicle->RenderPatient();
 	}
-	
-	
+		
 	char title[200];
 	sprintf_s(title, "%.1f Km/h || Patients picked up: %d/5 || Patients in the hospital %d/5 || Time: %.2f", vehicle->GetKmh(), App->scene_intro->countPatients, App->scene_intro->countHospitalPatients, count);
 	App->window->SetTitle(title);
@@ -169,4 +175,15 @@ update_status ModulePlayer::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
+void ModulePlayer::ResetGame()
+{
+	App->scene_intro->pickUpPatient1 = false;
+	App->scene_intro->pickUpPatient2 = false;
+	App->scene_intro->pickUpPatient3 = false;
+	App->scene_intro->pickUpPatient4 = false;
+	App->scene_intro->pickUpPatient5 = false;
+	App->scene_intro->countPatients = 0;
+	App->scene_intro->countHospitalPatients = 0;
+	App->scene_intro->ambulanceFree = true;
+}
 

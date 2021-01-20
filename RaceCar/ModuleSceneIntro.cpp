@@ -104,10 +104,6 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-	/*Plane p(0, 1, 0, 0);
-	p.axis = true;*/
-	//p.Render();
-
 	for (int i = 0; i < buildings.prim_builds.Count(); i++)
 		buildings.prim_builds[i].Render();
 
@@ -137,11 +133,11 @@ update_status ModuleSceneIntro::Update(float dt)
 		patients.body_patients[4].Render();
 	}
 
+	//constrains.base_constrains[0].Render();
+	//constrains.prim_constrains[0].Render();
 
 	return UPDATE_CONTINUE;
 }
-
-
 
 void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bColor)
 {
@@ -178,6 +174,14 @@ void ModuleSceneIntro::CreateHospitalSensor(const vec3 pos)
 	sensor.size = { 2,4,16 };
 	sensor.SetPos(pos.x, pos.y + 1.5, pos.z);
 	hospitalSensor = App->physics->AddBody(sensor, this, 0.0f, true);
+}
+
+void ModuleSceneIntro::CreateConstrain(const vec3 pos)
+{
+	Cylinder constrainBase;
+	constrainBase.radius = 10.0f;
+	constrainBase.height = 5.0f;
+	constrainBase.SetPos(pos.x, pos.y + 1.5, pos.z);
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
