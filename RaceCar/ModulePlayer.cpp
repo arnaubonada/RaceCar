@@ -195,6 +195,8 @@ void ModulePlayer::ResetGame()
 
 	App->player->vehicle->Brake(BRAKE_POWER);
 
+	App->audio->StopFx(sirenFx);
+
 	App->scene_intro->pickUpPatient1 = false;
 	App->scene_intro->pickUpPatient2 = false;
 	App->scene_intro->pickUpPatient3 = false;
