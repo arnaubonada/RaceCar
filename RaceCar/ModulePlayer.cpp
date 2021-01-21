@@ -155,7 +155,9 @@ update_status ModulePlayer::Update(float dt)
 	count = timer.Read() * 0.001f;
 	countInt = timer.Read() * 0.001f;
 
-	if (count >= 120.0f)
+	GetVehiclePosition();
+
+	if (count >= 120.0f || App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT /*|| vehicle->GetKmh() >= 100 &&*/ )
 	{
 		// Resets Timer and all variables
 		timer.Start();
@@ -177,8 +179,22 @@ update_status ModulePlayer::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
+void ModulePlayer::GetVehiclePosition()
+{
+	pos.x = vehicle->getPosX();
+	pos.y = vehicle->getPosY();
+	pos.z = vehicle->getPosZ();
+}
+
 void ModulePlayer::ResetGame()
 {
+	
+	pos = { 0, 0, -50 };
+
+	vehicle->SetPos(pos.x, pos.y, pos.z);
+
+	App->player->vehicle->Brake(BRAKE_POWER);
+
 	App->scene_intro->pickUpPatient1 = false;
 	App->scene_intro->pickUpPatient2 = false;
 	App->scene_intro->pickUpPatient3 = false;

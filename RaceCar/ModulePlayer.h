@@ -19,6 +19,8 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
+	void GetVehiclePosition();
+
 	void ResetGame();
 	
 public:
@@ -27,6 +29,8 @@ public:
 	float turn;
 	float acceleration;
 	float brake;
+
+	vec3 pos;
 
 	Timer timer;
 	float count = 0;

@@ -197,28 +197,28 @@ void ModuleSceneIntro::CreateConstrain(const vec3 pos, Color pColor)
 	buildings.prim_builds.PushBack(c);
 	buildings.phys_builds.PushBack(App->physics->AddBody(c, this, 0.0f));
 
-	btTransform frameInA, frameInB;
-
-	btSliderConstraint* constraint;
-
-	frameInA.setIdentity();
-	frameInB.setIdentity();
-	frameInA.getBasis().setEulerZYX(0, 0, M_PI_2);
-	frameInB.getBasis().setEulerZYX(0, 0, M_PI_2);
-	frameInA.setOrigin(btVector3(0.f, 0, 0.f));
-	frameInB.setOrigin(btVector3(0.f, -2.6f, 0.f));
+	//btTransform frameInA, frameInB;
+	//
+	//btSliderConstraint* constraint;
+	//
+	//frameInA.setIdentity();
+	//frameInB.setIdentity();
+	//frameInA.getBasis().setEulerZYX(0, 0, M_PI_2);
+	//frameInB.getBasis().setEulerZYX(0, 0, M_PI_2);
+	//frameInA.setOrigin(btVector3(0.f, 0, 0.f));
+	//frameInB.setOrigin(btVector3(0.f, -2.6f, 0.f));
 
 	//constraint = App->physics->AddConstraintSlider(*c, *bollardBase, frameInA, frameInB);
 	//bollards_c.PushBack(constraint);
-	constraint->setPoweredAngMotor(true);
-	constraint->setTargetAngMotorVelocity(2);
-	constraint->setLowerAngLimit(-0.1);
-	constraint->setUpperAngLimit(0.1);
-
-	constraint->setPoweredLinMotor(true);
-	constraint->setTargetLinMotorVelocity(0);
-	constraint->setLowerLinLimit(-9.6f);
-	constraint->setUpperLinLimit(9.6f);
+	//constraint->setPoweredAngMotor(true);
+	//constraint->setTargetAngMotorVelocity(2);
+	//constraint->setLowerAngLimit(-0.1);
+	//constraint->setUpperAngLimit(0.1);
+	//
+	//constraint->setPoweredLinMotor(true);
+	//constraint->setTargetLinMotorVelocity(0);
+	//constraint->setLowerLinLimit(-9.6f);
+	//constraint->setUpperLinLimit(9.6f);
 
 }
 
