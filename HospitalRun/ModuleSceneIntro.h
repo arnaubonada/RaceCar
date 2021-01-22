@@ -24,6 +24,11 @@ struct Constraints
 	p2DynArray<PhysBody3D*>		phys_constraints;
 	p2DynArray<Cube*>			prim_constraints;
 };
+struct WinSphere
+{
+	p2DynArray<PhysBody3D*>		phys_winSphere;
+	p2DynArray<Sphere>			sphere;
+};
 
 #define TRACK_WIDTH 20.0f
 class ModuleSceneIntro : public Module
@@ -45,13 +50,14 @@ public:
 
 public:
 	Buildings buildings;
-	Patients patients;
-	Constraints constraints;
-	PhysBody3D* hospitalSensor;
-	p2DynArray<Primitive*>	primitives;
-	p2DynArray<Cube*> garageDoor;
-
 	Sphere sun;
+
+	Constraints constraints;
+	p2DynArray<Cube*> garageDoor;
+	p2DynArray<Primitive*>	primitives;
+		
+	PhysBody3D* hospitalSensor;
+	Patients patients;
 	bool pickUpPatient1 = false;
 	bool pickUpPatient2 = false;
 	bool pickUpPatient3 = false;
@@ -63,6 +69,8 @@ public:
 	bool doorClosed = true;
 	Timer doorTimer;
 	int doorTime = 5;
+
+	int loseFx;
 private:
 	int pickupFx;
 	int hospitalFx;

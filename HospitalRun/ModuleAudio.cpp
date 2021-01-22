@@ -72,11 +72,12 @@ bool ModuleAudio::CleanUp()
 bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 {
 	bool ret = true;
-
+	
 	if (music != NULL)
 	{
 		if (fade_time > 0.0f)
 		{
+			
 			Mix_FadeOutMusic((int)(fade_time * 1000.0f));
 		}
 		else
@@ -87,7 +88,7 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 		// this call blocks until fade out is done
 		Mix_FreeMusic(music);
 	}
-
+	Mix_VolumeMusic(40);
 	music = Mix_LoadMUS(path);
 
 	if (music == NULL)
@@ -148,6 +149,7 @@ bool ModuleAudio::PlayFx(unsigned int id, int repeat)
 
 	if (fx.at(id - 1, chunk) == true)
 	{
+		Mix_Volume(-1, 30);
 		Mix_PlayChannel(-1, chunk, repeat);
 		ret = true;
 	}

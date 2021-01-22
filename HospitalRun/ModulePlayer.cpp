@@ -109,36 +109,27 @@ bool ModulePlayer::Start()
 	return true;
 }
 
-// Unload assets
-bool ModulePlayer::CleanUp()
-{
-	LOG("Unloading player");
-
-	return true;
-}
-
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {
+	// ---------------------------------------------------------
+	// Ambulance Movement and config
 	turn = acceleration = brake = 0.0f;
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 	{
 		acceleration = MAX_ACCELERATION;
 	}
-
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 	{
 		if (turn < TURN_DEGREES)
 			turn += TURN_DEGREES;
 	}
-
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 	{
 		if (turn > -TURN_DEGREES)
 			turn -= TURN_DEGREES;
 	}
-
 	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
 	{
 		if (vehicle->GetKmh() > 0.0f)
@@ -151,18 +142,14 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->ApplyEngineForce(acceleration);
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
-
+	// ---------------------------------------------------------
+	// Timer
 	count = timer.Read() * 0.001f;
 	countInt = timer.Read() * 0.001f;
-
+	// ---------------------------------------------------------
+	// Function that gets the current position of the ambulance
 	GetVehiclePosition();
-
-	if (count >= 120.0f || App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT /*|| vehicle->GetKmh() >= 100 &&*/)
-	{
-		// Resets Timer and all variables
-		ResetGame();
-	}
-
+	// SirenFx Control
 	if (App->scene_intro->ambulanceFree) vehicle->Render();
 	else
 	{
@@ -170,13 +157,37 @@ update_status ModulePlayer::Update(float dt)
 		else vehicle->RenderPatient();
 		App->audio->PlayFx(sirenFx, 1);
 	}
-
+	// ---------------------------------------------------------
+	// Game Resets
+	if (count >= 250.0f)
+	{
+		// Resets Timer and all variables
+		ResetGame();
+		App->audio->PlayFx(App->scene_intro->loseFx);		
+	}
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+	{
+		// Resets Timer and all variables
+		ResetGame();
+	}
+	// ---------------------------------------------------------
+	// Window info print
 	char title[200];
-	sprintf_s(title, "%.1f Km/h || Patients picked up: %d/5 || Patients in the hospital %d/5 || Time: %.2f", vehicle->GetKmh(), App->scene_intro->countPatients, App->scene_intro->countHospitalPatients, count);
+	sprintf_s(title, "%.1f Km/h || Patients picked up: %d/5 || Patients in the hospital %d/5 || Time: %.2f",
+		vehicle->GetKmh(), App->scene_intro->countPatients, App->scene_intro->countHospitalPatients, count);
 	App->window->SetTitle(title);
 
 	return UPDATE_CONTINUE;
 }
+
+// Unload assets
+bool ModulePlayer::CleanUp()
+{
+	LOG("Unloading player");
+
+	return true;
+}
+
 
 void ModulePlayer::GetVehiclePosition()
 {
@@ -187,9 +198,7 @@ void ModulePlayer::GetVehiclePosition()
 
 void ModulePlayer::ResetGame()
 {
-
-
-	App->player->vehicle->Brake(BRAKE_POWER);
+	vehicle->SetVelocity(0, 0, 0);
 	mat4x4 transform;
 	transform.rotate(0, vec3(0, 0, 1));
 	vehicle->SetTransform(&transform);

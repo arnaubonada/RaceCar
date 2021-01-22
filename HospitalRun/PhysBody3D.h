@@ -27,15 +27,19 @@ public:
 	btRigidBody* GetBody() const;
     void SetBody(Sphere* primitive, float mass);
 	void SetBody(Cube* primitive, float mass);
+	void SetBody(btCollisionShape* shape, Primitive* parent, float mass);
+
 	void Push(vec3 force);
+	void SetVelocity(float x, float y, float z);
+
 	void GetTransform(float* matrix) const;
 	void SetTransform(const float* matrix) const;
+
 	void SetPos(float x, float y, float z);
 	float getPosX();
 	float getPosY();
 	float getPosZ();
-    void SetBody(btCollisionShape* shape, Primitive* parent, float mass);
-
+   	
 private:
 	btRigidBody* body = nullptr;
     btCollisionShape* colShape;

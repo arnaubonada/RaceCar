@@ -63,7 +63,7 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ -300, 99, 0 }, { 1, 200, 600 }, Sky);
 
 	sun.color = Yellow;
-	sun.radius = 10;
+	sun.radius = 20;
 	sun.SetPos(100, 110, 250);
 
 
@@ -96,10 +96,11 @@ bool ModuleSceneIntro::Start()
 	CreateConstrain({ -18.7, 4, -109.5 }, DarkBlue);
 	CreateConstrain({ 18.7, 4, -109.5 }, DarkBlue);
 
-	App->audio->PlayMusic("Assets/Sound/waves.ogg");
+	App->audio->PlayMusic("Assets/Sound/dubstep.ogg");
 	pickupFx = App->audio->LoadFx("Assets/Sound/retro_pickup.ogg");
-
 	hospitalFx = App->audio->LoadFx("Assets/Sound/completed.ogg");
+	loseFx = App->audio->LoadFx("Assets/Sound/lose.ogg");
+
 	doorTimer.Start();
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
@@ -118,28 +119,25 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
+	// Primitives Render
 	for (uint n = 0; n < primitives.Count(); n++)
 		primitives[n]->Update();
 
+	// Building Renders
 	for (int i = 0; i < buildings.prim_builds.Count(); i++)
 		buildings.prim_builds[i]->Render();
 
-	//for (int i = 0; i < constraints.prim_constraints.Count(); i++)
-	//	constraints.prim_constraints[i].Render();
-	
+	// Constraints Timer
+	if (doorTimer.Read() > doorTime * 1000)
+	{
+		doorTimer.Start();
+		doorClosed = !doorClosed;
+	}
+	// Constraints Render
+	if (doorClosed) garageDoor[0]->body.Push(vec3(0, 20000, 0));
+	else garageDoor[1]->body.Push(vec3(0, 20000, 0));
 
-	/*for (int i = 0; i < door.Count(); i++)
-		door[i]->Render();*/
-
-		if (doorTimer.Read() > doorTime * 1000) 
-		{
-			doorTimer.Start();
-			doorClosed = !doorClosed;
-		}
-
-		if(doorClosed) garageDoor[0]->body.Push(vec3(0, 20000, 0));
-		else garageDoor[1]->body.Push(vec3(0, 20000, 0));
-
+	// Patients Render
 	if (!pickUpPatient1)
 	{
 		patients.head[0].Render();
