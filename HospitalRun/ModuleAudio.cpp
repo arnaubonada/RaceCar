@@ -88,7 +88,7 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 		// this call blocks until fade out is done
 		Mix_FreeMusic(music);
 	}
-	Mix_VolumeMusic(40);
+	Mix_VolumeMusic(26);
 	music = Mix_LoadMUS(path);
 
 	if (music == NULL)
@@ -117,6 +117,13 @@ bool ModuleAudio::PlayMusic(const char* path, float fade_time)
 	}
 
 	LOG("Successfully playing %s", path);
+	return ret;
+}
+
+bool ModuleAudio::StopMusic()
+{
+	bool ret = false;
+	ret = Mix_HaltMusic();
 	return ret;
 }
 

@@ -106,6 +106,7 @@ bool ModulePlayer::Start()
 
 	sirenFx = App->audio->LoadFx("Assets/Sound/ambulance.ogg");
 	loseFx = App->audio->LoadFx("Assets/Sound/lose.ogg");
+	restartFx = App->audio->LoadFx("Assets/Sound/surprise.ogg");
 
 	return true;
 }
@@ -160,7 +161,7 @@ update_status ModulePlayer::Update(float dt)
 	}
 	// ---------------------------------------------------------
 	// Game Resets
-	if (count >= 250.0f)
+	if (count >= 150.0f)
 	{
 		// Resets Timer and all variables
 		ResetGame();
@@ -170,6 +171,7 @@ update_status ModulePlayer::Update(float dt)
 	{
 		// Resets Timer and all variables
 		ResetGame();
+		App->audio->PlayFx(restartFx);
 	}
 	// ---------------------------------------------------------
 	// Window info print

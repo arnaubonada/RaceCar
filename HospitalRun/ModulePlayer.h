@@ -35,6 +35,9 @@ public:
 	Timer timer;
 	float count = 0;
 	int countInt = 0;
+
+	// Fx Sounds
 	int sirenFx;
 	int loseFx;
+	int restartFx;
 };

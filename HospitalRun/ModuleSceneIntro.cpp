@@ -108,17 +108,6 @@ bool ModuleSceneIntro::Start()
 	return ret;
 }
 
-// Load assets
-bool ModuleSceneIntro::CleanUp()
-{
-	LOG("Unloading Intro scene");
-
-	for (uint i = 0; i < winPrimitives.Count(); i++)
-		delete winPrimitives[i];
-
-	return true;
-}
-
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
@@ -142,7 +131,7 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	for (int i = 0; i < winSphere.sphere.Count(); i++)
 		winSphere.sphere[i].Render();
-
+	
 	// Patients Render
 	if (!pickUpPatient1)
 	{
@@ -170,21 +159,10 @@ update_status ModuleSceneIntro::Update(float dt)
 		patients.body[4]->Render();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		countHospitalPatients = 5;
-		countPatients = 5;
-		winTimer.Start();
-		if (winDuration != 0.0f)
-		{
-			winDuration = 0.0f;
-		}
-	}
 	if (countHospitalPatients == 5 && countPatients == 5)
 	{		
-		Win();
-		
 		winDuration = winTimer.Read() * 0.001f;
+		Win();
 		for (uint i = 0; i < winPrimitives.Count(); i++)
 			winPrimitives[i]->Update();
 	}
@@ -205,6 +183,18 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 	}
 
 	return UPDATE_CONTINUE;
+}
+
+// Load assets
+bool ModuleSceneIntro::CleanUp()
+{
+	LOG("Unloading Intro scene");
+
+	for (uint i = 0; i < winPrimitives.Count(); i++)
+		winPrimitives[i]->body.~PhysBody3D();
+
+	winPrimitives.Clear();
+	return true;
 }
 
 void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bColor)
@@ -310,10 +300,13 @@ void ModuleSceneIntro::Win()
 		
 		App->player->timer.Stop();
 	}	
-	if (winDuration >= 5.0f)
+	if (winDuration >= 10.0f)
 	{
-		App->player->ResetGame();		
-	}	
+		App->player->ResetGame();
+		App->audio->StopMusic();
+		App->audio->PlayMusic("Assets/Sound/dubstep.ogg");
+		CleanUp();
+	}
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
@@ -374,8 +367,9 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 		if (body1 == hospitalSensor && !ambulanceFree)
 		{
 			ambulanceFree = true;
-			App->audio->PlayFx(hospitalFx);
 			App->audio->StopFx(App->player->sirenFx);
+			App->audio->PlayFx(hospitalFx);
+			
 
 			if (countHospitalPatients < 1 && pickUpPatient1) countHospitalPatients = 1;
 			if (countHospitalPatients < 2 && pickUpPatient2) countHospitalPatients = 2;
@@ -384,6 +378,8 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			if (countHospitalPatients < 5 && pickUpPatient5)
 			{
 				countHospitalPatients = 5;
+				App->audio->StopMusic();
+				App->audio->PlayMusic("Assets/Sound/victory.ogg");
 				winTimer.Start();
 			}
 		}
