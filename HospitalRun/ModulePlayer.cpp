@@ -105,6 +105,7 @@ bool ModulePlayer::Start()
 	timer.Start();
 
 	sirenFx = App->audio->LoadFx("Assets/Sound/ambulance.ogg");
+	loseFx = App->audio->LoadFx("Assets/Sound/lose.ogg");
 
 	return true;
 }
@@ -163,7 +164,7 @@ update_status ModulePlayer::Update(float dt)
 	{
 		// Resets Timer and all variables
 		ResetGame();
-		App->audio->PlayFx(App->scene_intro->loseFx);		
+		App->audio->PlayFx(loseFx);		
 	}
 	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 	{

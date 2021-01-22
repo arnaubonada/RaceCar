@@ -47,6 +47,9 @@ public:
 	void CreatePatient(const vec3 pos, Color pColorHead, Color pColorBody);
 	void CreateHospitalSensor(const vec3 pos);
 	void CreateConstrain(const vec3 pos, Color pColor);
+	void CreateWinSphere(const vec3 pos, float radius, Color pColor);
+
+	void Win();
 
 public:
 	Buildings buildings;
@@ -55,6 +58,9 @@ public:
 	Constraints constraints;
 	p2DynArray<Cube*> garageDoor;
 	p2DynArray<Primitive*>	primitives;
+	p2DynArray<Primitive*>	winPrimitives;
+
+	WinSphere winSphere;
 		
 	PhysBody3D* hospitalSensor;
 	Patients patients;
@@ -66,12 +72,13 @@ public:
 	bool ambulanceFree = true;
 	int countPatients = 0;
 	int countHospitalPatients = 0;
-	bool doorClosed = true;
-	Timer doorTimer;
-	int doorTime = 5;
 
-	int loseFx;
 private:
 	int pickupFx;
 	int hospitalFx;
+
+	Timer doorTimer;
+	bool doorClosed = true;
+	Timer winTimer;
+	float winDuration;
 };

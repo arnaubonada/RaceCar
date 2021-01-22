@@ -16,7 +16,8 @@ bool ModuleSceneIntro::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
-
+	// ---------------------------------------------------------
+	// Building Creation
 	CreateBuilding({ -75, 24, 90 }, { 40, 50, 30 }, Gray);
 	CreateBuilding({ -40, 14, 90 }, { 30, 30, 30 }, White);
 	CreateBuilding({ -15, 29, 90 }, { 20, 60, 30 }, Gray);
@@ -56,17 +57,17 @@ bool ModuleSceneIntro::Start()
 	CreateBuilding({ -35, 14, 35 }, { 20, 30, 40 }, White);
 	CreateBuilding({ -55,  9, 25 }, { 20, 20, 20 }, Gray);
 	CreateBuilding({ -55, 24, 45 }, { 20, 50, 20 }, Gray);
-
+	// ---------------------------------------------------------
+	// Sky Creation
 	CreateBuilding({ 0, 99, 300 }, { 600, 200, 1 }, Sky);
 	CreateBuilding({ 0, 99, -300 }, { 600, 200, 1 }, Sky);
 	CreateBuilding({ 300, 99, 0 }, { 1, 200, 600 }, Sky);
 	CreateBuilding({ -300, 99, 0 }, { 1, 200, 600 }, Sky);
-
+	// Sun Creation
 	sun.color = Yellow;
 	sun.radius = 20;
 	sun.SetPos(100, 110, 250);
-
-
+	// ---------------------------------------------------------
 	//HOSPITAL
 	CreateBuilding({ 0, 14, -150 }, { 50, 30, 50 }, White);
 	CreateBuilding({ 0, 10, -117 }, { 50, 2, 16 }, Turquoise);
@@ -76,34 +77,33 @@ bool ModuleSceneIntro::Start()
 
 	CreateBuilding({ 0, -1, 0 }, { 300, 0.5, 300 }, Gray);
 
-	//Patient 1
+	// Patient 1
 	CreatePatient({ 60, -0.1, -50 }, Beige, Black);
-
-	//Patient 2
+	// Patient 2
 	CreatePatient({ 20, -0.1, -70 }, Beige, Blue);
-
-	//Patient 3
+	// Patient 3
 	CreatePatient({ -87, -0.1, 50 }, Brown, Green);
-
-	//Patient 4
+	// Patient 4
 	CreatePatient({ 10, -0.1, 70 }, Beige, Pink);
-
-	//Patient 5
+	// Patient 5
 	CreatePatient({ 80, -0.1, 70 }, Brown, White);
 
+	// Hospital sensor
 	CreateHospitalSensor({ 0, 1, -118 });
 
+	// Hospital's doors
 	CreateConstrain({ -18.7, 4, -109.5 }, DarkBlue);
-	CreateConstrain({ 18.7, 4, -109.5 }, DarkBlue);
-
-	App->audio->PlayMusic("Assets/Sound/dubstep.ogg");
-	pickupFx = App->audio->LoadFx("Assets/Sound/retro_pickup.ogg");
-	hospitalFx = App->audio->LoadFx("Assets/Sound/completed.ogg");
-	loseFx = App->audio->LoadFx("Assets/Sound/lose.ogg");
-
+	CreateConstrain({ 18.7, 4, -109.5 }, DarkBlue);	
+	// ---------------------------------------------------------
+	// Timer and Camera
 	doorTimer.Start();
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
+	// ---------------------------------------------------------
+	// Music Loadings
+	App->audio->PlayMusic("Assets/Sound/dubstep.ogg");
+	pickupFx = App->audio->LoadFx("Assets/Sound/retro_pickup.ogg");
+	hospitalFx = App->audio->LoadFx("Assets/Sound/completed.ogg");
 
 	return ret;
 }
@@ -113,6 +113,9 @@ bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
 
+	for (uint i = 0; i < winPrimitives.Count(); i++)
+		delete winPrimitives[i];
+
 	return true;
 }
 
@@ -120,15 +123,15 @@ bool ModuleSceneIntro::CleanUp()
 update_status ModuleSceneIntro::Update(float dt)
 {
 	// Primitives Render
-	for (uint n = 0; n < primitives.Count(); n++)
-		primitives[n]->Update();
+	for (uint i = 0; i < primitives.Count(); i++)
+		primitives[i]->Update();		
 
 	// Building Renders
 	for (int i = 0; i < buildings.prim_builds.Count(); i++)
 		buildings.prim_builds[i]->Render();
 
 	// Constraints Timer
-	if (doorTimer.Read() > doorTime * 1000)
+	if (doorTimer.Read() > 5000)
 	{
 		doorTimer.Start();
 		doorClosed = !doorClosed;
@@ -136,6 +139,9 @@ update_status ModuleSceneIntro::Update(float dt)
 	// Constraints Render
 	if (doorClosed) garageDoor[0]->body.Push(vec3(0, 20000, 0));
 	else garageDoor[1]->body.Push(vec3(0, 20000, 0));
+
+	for (int i = 0; i < winSphere.sphere.Count(); i++)
+		winSphere.sphere[i].Render();
 
 	// Patients Render
 	if (!pickUpPatient1)
@@ -164,16 +170,40 @@ update_status ModuleSceneIntro::Update(float dt)
 		patients.body[4]->Render();
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		countHospitalPatients = 5;
+		countPatients = 5;
+		winTimer.Start();
+		if (winDuration != 0.0f)
+		{
+			winDuration = 0.0f;
+		}
+	}
+	if (countHospitalPatients == 5 && countPatients == 5)
+	{		
+		Win();
+		
+		winDuration = winTimer.Read() * 0.001f;
+		for (uint i = 0; i < winPrimitives.Count(); i++)
+			winPrimitives[i]->Update();
+	}
+
 	sun.Render();
 	return UPDATE_CONTINUE;
 }
 
 update_status ModuleSceneIntro::PostUpdate(float dt)
 {
-	for (uint n = 0; n < primitives.Count(); n++)
+	for (uint i = 0; i < primitives.Count(); i++)
+		primitives[i]->Render();
+	
+	if (countHospitalPatients == 5 && countPatients == 5)
 	{
-		primitives[n]->Render();
+		for (uint i = 0; i < winPrimitives.Count(); i++)
+			winPrimitives[i]->Render();
 	}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -213,7 +243,6 @@ void ModuleSceneIntro::CreateHospitalSensor(const vec3 pos)
 {
 	Cube* sensor;
 	sensor = new Cube(2, 4, 16);
-	//sensor->size = { 2,4,16 };
 	sensor->SetPos(pos.x, pos.y + 1.5, pos.z);
 	hospitalSensor = App->physics->AddBody(*sensor, this, 0.0f, true);
 }
@@ -247,7 +276,45 @@ void ModuleSceneIntro::CreateConstrain(const vec3 pos, Color pColor)
 	constraint->setLowerLinLimit(-11.f);
 }
 
+void ModuleSceneIntro::CreateWinSphere(const vec3 pos, float radius, Color pColor)
+{
+	float mass = 0.3f;
+	Sphere* s =  new Sphere(radius, mass);
+	s->color = pColor;
+	s->radius = radius;
+	s->SetPos(pos.x, pos.y, pos.z);
 
+	winPrimitives.PushBack(s);
+}
+
+void ModuleSceneIntro::Win()
+{
+	if (winDuration == 0.0f)
+	{
+		CreateWinSphere({ 0, 20, 0 }, 6, Red);
+		CreateWinSphere({ 20, 30, 40 }, 5, White);
+		CreateWinSphere({ 30, 20, 0 }, 4, Blue);
+		CreateWinSphere({ -30, 10, 0 }, 5, Green);
+		CreateWinSphere({ 50, 30, 70 }, 3, Yellow);
+		CreateWinSphere({ 40, 30, 50 }, 3, DarkBlue);
+		CreateWinSphere({ 0, 20, 30 }, 3, Beige);
+		CreateWinSphere({ -50, 20, 15 }, 5, Green);
+		CreateWinSphere({ -10, 20, 45 }, 5, Turquoise);
+		CreateWinSphere({ -70, 30, 20 }, 3, Orange);
+		CreateWinSphere({ 20, 20, -80 }, 3, Black);
+		CreateWinSphere({ 10, 30, -90 }, 3, Blue);
+		CreateWinSphere({ 60, 10, -30 }, 3, Pink);
+		CreateWinSphere({ -20, 20, -90 }, 3, Brown);
+		CreateWinSphere({ -10, 10, -80 }, 3, DarkBlue);
+		CreateWinSphere({ 40, 20, -50 }, 3, White);
+		
+		App->player->timer.Stop();
+	}	
+	if (winDuration >= 5.0f)
+	{
+		App->player->ResetGame();		
+	}	
+}
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
@@ -304,7 +371,6 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 				countPatients = 5;
 			}
 		}
-
 		if (body1 == hospitalSensor && !ambulanceFree)
 		{
 			ambulanceFree = true;
@@ -315,7 +381,11 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			if (countHospitalPatients < 2 && pickUpPatient2) countHospitalPatients = 2;
 			if (countHospitalPatients < 3 && pickUpPatient3) countHospitalPatients = 3;
 			if (countHospitalPatients < 4 && pickUpPatient4) countHospitalPatients = 4;
-			if (countHospitalPatients < 5 && pickUpPatient5) countHospitalPatients = 5;
+			if (countHospitalPatients < 5 && pickUpPatient5)
+			{
+				countHospitalPatients = 5;
+				winTimer.Start();
+			}
 		}
 	}
 }
