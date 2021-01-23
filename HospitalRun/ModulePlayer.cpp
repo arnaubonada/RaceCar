@@ -167,7 +167,7 @@ update_status ModulePlayer::Update(float dt)
 		ResetGame();
 		App->audio->PlayFx(loseFx);		
 	}
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+	if ((App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) && (!App->scene_intro->inSceneWin))
 	{
 		// Resets Timer and all variables
 		ResetGame();
@@ -217,5 +217,13 @@ void ModulePlayer::ResetGame()
 	App->scene_intro->countPatients = 0;
 	App->scene_intro->countHospitalPatients = 0;
 	App->scene_intro->ambulanceFree = true;
+}
+void ModulePlayer::SetWinPosition()
+{
+	vehicle->SetVelocity(0, 0, 0);
+	mat4x4 transform;
+	transform.rotate(0, vec3(0, 0, 1));
+	vehicle->SetTransform(&transform);
+	vehicle->SetPos(0, 0, -90);	
 }
 

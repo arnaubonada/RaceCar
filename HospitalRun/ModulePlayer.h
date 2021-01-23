@@ -22,6 +22,7 @@ public:
 	void GetVehiclePosition();
 
 	void ResetGame();
+	void SetWinPosition();
 
 public:
 	p2DynArray<PhysBody3D*>		phys_car;

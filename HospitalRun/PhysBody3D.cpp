@@ -22,9 +22,7 @@ PhysBody3D::~PhysBody3D()
     if (body != nullptr)
     {
         App->physics->RemoveBodyFromWorld(body);
-        delete body;
-       // delete colShape;
-        //delete motionState;
+        delete body;       
     }
 }
 // ---------------------------------------------------------

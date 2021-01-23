@@ -378,11 +378,16 @@ void ModulePhysics3D::AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, c
 	constraints.add(hinge);
 	hinge->setDbgDrawSize(2.0f);
 }
-btSliderConstraint* ModulePhysics3D::AddConstraintSlider(const Primitive& bodyA, const Primitive& bodyB, btTransform& frameinA, btTransform& frameinB) {
-	btSliderConstraint* constraint = new btSliderConstraint(*bodyA.body.GetBody(), *bodyB.body.GetBody(), frameinA, frameinB, true);
+void ModulePhysics3D::AddConstraintSlider(const Primitive& bodyA, const Primitive& bodyB, btTransform& frameinA, btTransform& frameinB)
+{
+	btSliderConstraint* constraint = new btSliderConstraint(
+		*bodyA.body.GetBody(),
+		*bodyB.body.GetBody(),
+		frameinA,
+		frameinB,
+		true);
 	world->addConstraint(constraint);
 	constraints.add((btTypedConstraint*)constraint);
-	return constraint;
 }
 // =============================================
 void DebugDrawer::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)

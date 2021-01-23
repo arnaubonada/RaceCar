@@ -41,6 +41,7 @@ public:
 	update_status Update(float dt);
 	update_status PostUpdate(float dt);
 	bool CleanUp();
+	void CleanWinScene();
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 
 	void CreateBuilding(const vec3 pos, const vec3 dim, Color bColor);
@@ -72,6 +73,8 @@ public:
 	bool ambulanceFree = true;
 	int countPatients = 0;
 	int countHospitalPatients = 0;
+
+	bool inSceneWin = false;
 
 private:
 	int pickupFx;

@@ -68,7 +68,7 @@ bool ModuleSceneIntro::Start()
 	sun.radius = 20;
 	sun.SetPos(100, 110, 250);
 	// ---------------------------------------------------------
-	//HOSPITAL
+	// HOSPITAL
 	CreateBuilding({ 0, 14, -150 }, { 50, 30, 50 }, White);
 	CreateBuilding({ 0, 10, -117 }, { 50, 2, 16 }, Turquoise);
 	CreateBuilding({ 0,  4, -109.5 }, { 25, 10, 1 }, White);
@@ -133,7 +133,7 @@ update_status ModuleSceneIntro::Update(float dt)
 		winSphere.sphere[i].Render();
 	
 	// Patients Render
-	if (!pickUpPatient1)
+	if (!pickUpPatient1 && !inSceneWin)
 	{
 		patients.head[0].Render();
 		patients.body[0]->Render();
@@ -157,6 +157,20 @@ update_status ModuleSceneIntro::Update(float dt)
 	{
 		patients.head[4].Render();
 		patients.body[4]->Render();
+	}
+
+	// Win Scene. Only for Debug purpose. Use with caution
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		CleanWinScene();
+		inSceneWin = true;
+		countHospitalPatients = 5;
+		countPatients = 5;
+
+		App->audio->StopMusic();
+		App->audio->PlayMusic("Assets/Sound/victory.ogg");
+		App->player->SetWinPosition();
+		winTimer.Start();
 	}
 
 	if (countHospitalPatients == 5 && countPatients == 5)
@@ -189,12 +203,16 @@ update_status ModuleSceneIntro::PostUpdate(float dt)
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
+	return true;
+}
 
+void ModuleSceneIntro::CleanWinScene()
+{
+	// Cleans all the spheres in the win scene
 	for (uint i = 0; i < winPrimitives.Count(); i++)
 		winPrimitives[i]->body.~PhysBody3D();
 
 	winPrimitives.Clear();
-	return true;
 }
 
 void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bColor)
@@ -202,7 +220,6 @@ void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bCol
 	Cube* c;
 	c = new Cube(dim.x, dim.y, dim.z);
 	c->color = bColor;
-	//c->size = { dim.x, dim.y, dim.z };
 	c->SetPos(pos.x, pos.y + 1, pos.z);
 	buildings.prim_builds.PushBack(c);
 	buildings.phys_builds.PushBack(App->physics->AddBody(*c, this, 0.0f));
@@ -215,16 +232,15 @@ void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColorHead, Color pCo
 	s.radius = 0.5;
 	s.SetPos(pos.x, pos.y + 2.5, pos.z);
 	patients.head.PushBack(s);
+
 	Cube* c;
 	c = new Cube(0.5, 2, 0.5);
 	c->color = pColorBody;
-	//c->size = { 0.5,2,0.5 };
 	c->SetPos(pos.x, pos.y + 1.5, pos.z);
 	patients.body.PushBack(c);
 
 	Cube* sensor;
 	sensor = new Cube(1, 3, 1);
-	//sensor->size = { 1,3,1 };
 	sensor->SetPos(pos.x, pos.y + 2, pos.z);
 	patients.phys_patients.PushBack(App->physics->AddBody(*sensor, this, 0.0f, true));
 }
@@ -239,31 +255,27 @@ void ModuleSceneIntro::CreateHospitalSensor(const vec3 pos)
 
 void ModuleSceneIntro::CreateConstrain(const vec3 pos, Color pColor)
 {
-	Cube* c;
-	c = new Cube(vec3(12.3, 5, 0.5), 1000);
-	c->color = pColor;
-	c->SetPos(pos.x, 1.5f, pos.z);
-	primitives.PushBack(c);
-	garageDoor.PushBack(c);
+	Cube* bodyA;
+	bodyA = new Cube(vec3(12.3, 5, 0.5), 1000);
+	bodyA->color = pColor;
+	bodyA->SetPos(pos.x, 1.5, pos.z);
+	primitives.PushBack(bodyA);
+	garageDoor.PushBack(bodyA);
 
-	Cube* c1;
-	c1 = new Cube(vec3(12.3, 0.8, 0.8), 0);
-	c1->SetPos(pos.x, -0.2f, pos.z);
-	primitives.PushBack(c1);
-	btTransform frameInA, frameInB;
+	Cube* bodyB;
+	bodyB = new Cube(vec3(12.3, 0.8, 0.8), 0);
+	bodyB->SetPos(pos.x, -0.2, pos.z);
+	primitives.PushBack(bodyB);
 
-	frameInA.setIdentity();
+	btTransform frameInA;
 	frameInA.getBasis().setEulerZYX(0, 0, M_PI / 2);
-	frameInA.setOrigin(btVector3(0.0f, 0.0f, 0.0f));
+	frameInA.setOrigin(btVector3(0, 0, 0));
 
-	frameInB.setIdentity();
+	btTransform frameInB;
 	frameInB.getBasis().setEulerZYX(0, 0, M_PI / 2);
-	frameInB.setOrigin(btVector3(0.0f, -2.0f, 0.0f));
+	frameInB.setOrigin(btVector3(0, 0, 0));
 
-	btSliderConstraint* constraint;
-
-	constraint = App->physics->AddConstraintSlider(*c, *c1, frameInA, frameInB);
-	constraint->setLowerLinLimit(-11.f);
+	App->physics->AddConstraintSlider(*bodyA, *bodyB, frameInA, frameInB);
 }
 
 void ModuleSceneIntro::CreateWinSphere(const vec3 pos, float radius, Color pColor)
@@ -290,13 +302,13 @@ void ModuleSceneIntro::Win()
 		CreateWinSphere({ 0, 20, 30 }, 3, Beige);
 		CreateWinSphere({ -50, 20, 15 }, 5, Green);
 		CreateWinSphere({ -10, 20, 45 }, 5, Turquoise);
-		CreateWinSphere({ -70, 30, 20 }, 3, Orange);
+		CreateWinSphere({ -70, 30, 20 }, 7, Orange);
 		CreateWinSphere({ 20, 20, -80 }, 3, Black);
-		CreateWinSphere({ 10, 30, -90 }, 3, Blue);
-		CreateWinSphere({ 60, 10, -30 }, 3, Pink);
+		CreateWinSphere({ 10, 30, -90 }, 4, Blue);
+		CreateWinSphere({ 60, 10, -30 }, 6, Pink);
 		CreateWinSphere({ -20, 20, -90 }, 3, Brown);
-		CreateWinSphere({ -10, 10, -80 }, 3, DarkBlue);
-		CreateWinSphere({ 40, 20, -50 }, 3, White);
+		CreateWinSphere({ -10, 10, -80 }, 2, DarkBlue);
+		CreateWinSphere({ 40, 20, -50 }, 10, White);
 		
 		App->player->timer.Stop();
 	}	
@@ -305,13 +317,14 @@ void ModuleSceneIntro::Win()
 		App->player->ResetGame();
 		App->audio->StopMusic();
 		App->audio->PlayMusic("Assets/Sound/dubstep.ogg");
-		CleanUp();
+		inSceneWin = false;
+		CleanWinScene();
 	}
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
-	if (body1->is_sensor)
+	if (body1->is_sensor && !inSceneWin)
 	{
 		if (body1 == patients.phys_patients[0] && ambulanceFree)
 		{
@@ -380,6 +393,8 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 				countHospitalPatients = 5;
 				App->audio->StopMusic();
 				App->audio->PlayMusic("Assets/Sound/victory.ogg");
+				App->player->SetWinPosition();
+				inSceneWin = true;
 				winTimer.Start();
 			}
 		}
