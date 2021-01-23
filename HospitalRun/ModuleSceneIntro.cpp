@@ -120,7 +120,8 @@ update_status ModuleSceneIntro::Update(float dt)
 		buildings.prim_builds[i]->Render();
 
 	// Constraints Timer
-	if (doorTimer.Read() > 5000)
+	doorDuration = doorTimer.Read() * 0.001f;
+	if (doorDuration > 4.0f)
 	{
 		doorTimer.Start();
 		doorClosed = !doorClosed;
@@ -160,7 +161,7 @@ update_status ModuleSceneIntro::Update(float dt)
 	}
 
 	// Win Scene. Only for Debug purpose. Use with caution
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	/*if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
 	{
 		CleanWinScene();
 		inSceneWin = true;
@@ -171,7 +172,7 @@ update_status ModuleSceneIntro::Update(float dt)
 		App->audio->PlayMusic("Assets/Sound/victory.ogg");
 		App->player->SetWinPosition();
 		winTimer.Start();
-	}
+	}*/
 
 	if (countHospitalPatients == 5 && countPatients == 5)
 	{		
@@ -217,6 +218,7 @@ void ModuleSceneIntro::CleanWinScene()
 
 void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bColor)
 {
+	// Create a cube to render a building
 	Cube* c;
 	c = new Cube(dim.x, dim.y, dim.z);
 	c->color = bColor;
@@ -227,6 +229,7 @@ void ModuleSceneIntro::CreateBuilding(const vec3 pos, const vec3 dim, Color bCol
 
 void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColorHead, Color pColorBody)
 {
+	// Create sphere and cube to render a patient
 	Sphere s;
 	s.color = pColorHead;
 	s.radius = 0.5;
@@ -239,6 +242,7 @@ void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColorHead, Color pCo
 	c->SetPos(pos.x, pos.y + 1.5, pos.z);
 	patients.body.PushBack(c);
 
+	// Create a sensor to be able to pick patients
 	Cube* sensor;
 	sensor = new Cube(1, 3, 1);
 	sensor->SetPos(pos.x, pos.y + 2, pos.z);
@@ -247,17 +251,19 @@ void ModuleSceneIntro::CreatePatient(const vec3 pos, Color pColorHead, Color pCo
 
 void ModuleSceneIntro::CreateHospitalSensor(const vec3 pos)
 {
+	// Create a cube to render a building
 	Cube* sensor;
 	sensor = new Cube(2, 4, 16);
 	sensor->SetPos(pos.x, pos.y + 1.5, pos.z);
 	hospitalSensor = App->physics->AddBody(*sensor, this, 0.0f, true);
 }
 
-void ModuleSceneIntro::CreateConstrain(const vec3 pos, Color pColor)
+void ModuleSceneIntro::CreateConstrain(const vec3 pos, Color color)
 {
+	// Create two cubes to add a constraint slider
 	Cube* bodyA;
 	bodyA = new Cube(vec3(12.3, 5, 0.5), 1000);
-	bodyA->color = pColor;
+	bodyA->color = color;
 	bodyA->SetPos(pos.x, 1.5, pos.z);
 	primitives.PushBack(bodyA);
 	garageDoor.PushBack(bodyA);
@@ -278,11 +284,11 @@ void ModuleSceneIntro::CreateConstrain(const vec3 pos, Color pColor)
 	App->physics->AddConstraintSlider(*bodyA, *bodyB, frameInA, frameInB);
 }
 
-void ModuleSceneIntro::CreateWinSphere(const vec3 pos, float radius, Color pColor)
+void ModuleSceneIntro::CreateWinSphere(const vec3 pos, float radius, Color color)
 {
 	float mass = 0.3f;
 	Sphere* s =  new Sphere(radius, mass);
-	s->color = pColor;
+	s->color = color;
 	s->radius = radius;
 	s->SetPos(pos.x, pos.y, pos.z);
 
@@ -324,6 +330,7 @@ void ModuleSceneIntro::Win()
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
+	// All cases for collisions with patients or hospital sensor
 	if (body1->is_sensor && !inSceneWin)
 	{
 		if (body1 == patients.phys_patients[0] && ambulanceFree)

@@ -149,8 +149,6 @@ update_status ModulePlayer::Update(float dt)
 	count = timer.Read() * 0.001f;
 	countInt = timer.Read() * 0.001f;
 	// ---------------------------------------------------------
-	// Function that gets the current position of the ambulance
-	GetVehiclePosition();
 	// SirenFx Control
 	if (App->scene_intro->ambulanceFree) vehicle->Render();
 	else
@@ -161,17 +159,21 @@ update_status ModulePlayer::Update(float dt)
 	}
 	// ---------------------------------------------------------
 	// Game Resets
-	if (count >= 150.0f)
+	if (count >= 5.0f)
 	{
 		// Resets Timer and all variables
 		ResetGame();
-		App->audio->PlayFx(loseFx);		
+		App->audio->StopMusic();
+		App->audio->PlayFx(loseFx);
+		App->audio->PlayMusic("Assets/Sound/dubstep.ogg");
 	}
 	if ((App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) && (!App->scene_intro->inSceneWin))
 	{
 		// Resets Timer and all variables
 		ResetGame();
+		App->audio->StopMusic();
 		App->audio->PlayFx(restartFx);
+		App->audio->PlayMusic("Assets/Sound/dubstep.ogg");
 	}
 	// ---------------------------------------------------------
 	// Window info print
@@ -189,14 +191,6 @@ bool ModulePlayer::CleanUp()
 	LOG("Unloading player");
 
 	return true;
-}
-
-
-void ModulePlayer::GetVehiclePosition()
-{
-	pos.x = vehicle->getPosX();
-	pos.y = vehicle->getPosY();
-	pos.z = vehicle->getPosZ();
 }
 
 void ModulePlayer::ResetGame()

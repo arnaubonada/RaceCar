@@ -47,8 +47,8 @@ public:
 	void CreateBuilding(const vec3 pos, const vec3 dim, Color bColor);
 	void CreatePatient(const vec3 pos, Color pColorHead, Color pColorBody);
 	void CreateHospitalSensor(const vec3 pos);
-	void CreateConstrain(const vec3 pos, Color pColor);
-	void CreateWinSphere(const vec3 pos, float radius, Color pColor);
+	void CreateConstrain(const vec3 pos, Color color);
+	void CreateWinSphere(const vec3 pos, float radius, Color color);
 
 	void Win();
 
@@ -83,5 +83,6 @@ private:
 	Timer doorTimer;
 	bool doorClosed = true;
 	Timer winTimer;
+	float doorDuration;
 	float winDuration;
 };
