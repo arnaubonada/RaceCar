@@ -159,7 +159,7 @@ update_status ModulePlayer::Update(float dt)
 	}
 	// ---------------------------------------------------------
 	// Game Resets
-	if (count >= 5.0f)
+	if (count >= 180.0f)
 	{
 		// Resets Timer and all variables
 		ResetGame();
