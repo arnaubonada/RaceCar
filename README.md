@@ -11,7 +11,6 @@ This project was developed for Physics II subject in UPC-CITM (Terrassa) by Xeic
  - Be careful not exceeding the speed and don't crash the ambulance!
  
 ## Controls
-### Game controls
  - W for forward movement
  - S for backward movement
  - A,D for rotation movement
@@ -21,5 +20,8 @@ This project was developed for Physics II subject in UPC-CITM (Terrassa) by Xeic
  - Arnau Bonada
  - Albert Pou
  - Andreu Landa
+
+## Github Release
+https://github.com/Hydeon-git/RacingGame/releases/tag/1.0
 
 
